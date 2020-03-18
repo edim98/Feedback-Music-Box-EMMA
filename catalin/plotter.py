@@ -1,12 +1,10 @@
 from matplotlib import pyplot as plt
-import matplotlib as mpl
-import numpy as np
 
-plt.style.use('dark_background')
+plt.style.use('dark_background')  # Responsible for making the plots in dark mode
 
 HISTORY_SIZE = 5  # Number of observations for mean calculation and progress plot
 
-COLORS = {
+COLORS = {  # Used for color coding the graphs
     'anger': '#dd3418',  # red
     'contempt': '#dd8518',  # orange
     'disgust': '#4a8a4d',  # puke green
@@ -17,7 +15,7 @@ COLORS = {
     'surprise': '#b665b6'  # surprise violet
 }
 
-emotion_history = {
+emotion_history = {  # Used to track the progress of the recognized emotion values
     'anger': [0.0],
     'contempt': [0.0],
     'disgust': [0.0],
@@ -28,7 +26,7 @@ emotion_history = {
     'surprise': [0.0]
 }
 
-means_history = {
+means_history = {  # Used in case we want to track the progress of the means
     'anger': [],
     'contempt': [],
     'disgust': [],
@@ -41,6 +39,11 @@ means_history = {
 
 
 def write_plot(emotions_dict):
+    """
+    Creates two plots: one representing the live values of recognized emotions and another showing the progress of
+    those values over a set period of time (HISTORY_SIZE).
+    :param emotions_dict: Dictionary containing the values of the recognized emotions.
+    """
     if not emotions_dict:
         return
     emotions = []
@@ -51,7 +54,7 @@ def write_plot(emotions_dict):
             values.append(value)
             emotion_history[emotion].append(value)
 
-            if len(emotion_history[emotion]) > HISTORY_SIZE:
+            if len(emotion_history[emotion]) > HISTORY_SIZE:  # Keeping the list to the size of HISTORY_SIZE
                 emotion_history[emotion].pop(0)
         break  # Just to be sure we are only taking the first face available
 
@@ -65,7 +68,7 @@ def write_plot(emotions_dict):
     live_prog.set_ylim(0, 1)
     live_prog.set_xlim(0, HISTORY_SIZE)
 
-    barlist = live.bar(emotions, values)
+    barlist = live.bar(emotions, values)  # The barplot
 
     live_length = len(emotion_history['neutral'])
     means_length = 1 if len(means_history['neutral']) == 0 else len(means_history['neutral']) + 1
@@ -74,7 +77,7 @@ def write_plot(emotions_dict):
     i = 0
     for emotion, history in emotion_history.items():
         means_history[emotion].append(sum(history) / means_length)
-        if len(means_history[emotion]) > HISTORY_SIZE:
+        if len(means_history[emotion]) > HISTORY_SIZE:  # Keeping the list to the size of HISTORY_SIZE
             means_history[emotion].pop(0)
 
         live_prog.plot(x_axis,
@@ -85,15 +88,6 @@ def write_plot(emotions_dict):
 
         live_prog.set_xlim(0, HISTORY_SIZE - 1)
         live_prog.set_xticks(x_axis)
-
-        # means_prog.plot(x_axis,
-        #                 fill_gaps(means_history[emotion], means_length),
-        #                 color=COLORS[emotion],
-        #                 label=emotion,
-        #                 linewidth=2)
-        #
-        # means_prog.set_xlim(0, HISTORY_SIZE - 1)
-        # means_prog.set_xticks(x_axis)
 
         barlist[i].set_color(COLORS[emotion])
         barlist[i].set_alpha(0.75)
@@ -136,17 +130,43 @@ def fill_gaps(history_list, current_length):
         return copy
 
 
+def set_history_size(value):
+    """
+    Sets HISTORY_SIZE/number of observations for progress plotting to a specified value.
+    :param value: (hopefully) an integer
+    """
+    global HISTORY_SIZE
+    if value is int:
+        HISTORY_SIZE = value
+
+
 def get_history_size():
+    """
+    Returns the number of observations that we are plotting for the progress plot.
+    :return: plotter.HISTORY_SIZE
+    """
     return HISTORY_SIZE
 
 
 def get_emotions_history():
+    """
+    Returns a dictionary containing lists of observed values for each emotion. The length of the lists <= HISTORY_SIZE.
+    :return: plotter.emotion_history
+    """
     return emotion_history
 
 
 def get_means_history():
+    """
+    Returns a dictionary containing list of mean values for each emotion. The length of the lists <= HISTORY_SIZE.
+    :return: plotter.means_history
+    """
     return means_history
 
 
 def get_colors():
+    """
+    Returns a dictionary containing a hex representation of colors associated with specific emotions.
+    :return: plotter.COLORS
+    """
     return COLORS
