@@ -11,11 +11,12 @@ import catalin.azorel as azorel
 import sys
 import catalin.plotter as plotter
 import catalin.GUI as GUI
+import other_scripts.CLIparser as CLIparser
 
 from pymongo import MongoClient
 from app import progress_history, track_history, aggdata, descriptors
 from audio import Tracklist, Playlist2
-from model.fast_and_cam import facechop
+from model.fast_and_cam import facechop, classify
 
 #  Detection/classifier parameters
 SCALE_FACTOR = 1.2
@@ -224,6 +225,9 @@ def getEmotionList(emotions):
         return emotions[face_id]
 
 def main():
+
+    azureFlag = CLIparser.parseFlags()
+
     db, sessionID = initialize()
 
     thread = threading.Thread(target=GUI.run)
@@ -246,7 +250,11 @@ def main():
         start_time = time.time()
 
         if not GUI.dead and not GUI.frozen:
-            emotions = get_facial_emotion(frame)
+            if azureFlag:
+                emotions = get_facial_emotion(frame)
+            else:
+                face_isolated = facechop(frame)
+                emotions = classify(None, face_isolated)
             if emotions:
                 if Playlist2.is_playing():
                     current_song = Playlist2.get_current_song()
@@ -261,9 +269,9 @@ def main():
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
-                plotter.write_plot(emotions)
+                # plotter.write_plot(emotions)
                 GUI.refresh()
-                # print("ref")
+                print("ref")
                 
             # print("New frame displayed in View")
             # for (x, y, h, w) in get_forehead_coordinates(frame):

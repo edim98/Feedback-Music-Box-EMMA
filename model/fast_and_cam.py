@@ -1,12 +1,16 @@
 # from fastai.vision import *
 
 # TODO: Incorporate this in the main module.
+# TODO: Change response to another format.
 
 import cv2
 import requests
 from time import sleep
 from datetime import datetime
 import threading
+
+
+# Angry, happy, neutral, sad
 
 def get_face_expanded(x, y, width, height, img):
     frame_height = len(img)
@@ -44,7 +48,7 @@ def show_distance_indicator(x, y, width, height, img):
     cv2.rectangle(img, (x,y), (x+width,y+height), color)
 
 def facechop(img):  
-    facedata = "haarcascade_frontalface_default.xml"
+    facedata = "./model/haarcascade_frontalface_default.xml"
     cascade = cv2.CascadeClassifier(facedata)
 
     minisize = (img.shape[1],img.shape[0])
@@ -63,9 +67,9 @@ def facechop(img):
         x, y, w, h = [ v for v in f ]
 
         sub_face = get_face_expanded(x, y, w, h, img)
-        show_distance_indicator(x, y, w, h, img)
+        # show_distance_indicator(x, y, w, h, img)
 
-        cv2.imshow("Capturing", img)
+        # cv2.imshow("Capturing", img)
         
         return sub_face
 
@@ -78,10 +82,12 @@ def classify(learn, face_isolated):
     # face_isolated = cv2.cvtColor(face_isolated, cv2.COLOR_BGR2RGB)
 
     face_224 = cv2.resize(face_isolated, (224, 224))
-    cv2.imwrite('face.jpg', face_224)
+    # cv2.imwrite('face.jpg', face_224)
+    cv2.imwrite('frame.png', face_224)
 
     byte_image = get_image_bytes(face_224)
-    send_to_server(byte_image)
+    emotions = send_to_server(byte_image)
+    return emotions
     
 
 
@@ -97,7 +103,8 @@ def send_to_server(byte_image):
     jsonboi = response.json()
 
     receival_time = datetime.now().time()
-    print('\n', jsonboi, '\n send_time:', send_time, '\n receival time:', receival_time)
+    # print('\n', jsonboi, '\n send_time:', send_time, '\n receival time:', receival_time)
+    return jsonboi
 
 
 if __name__ == "__main__":

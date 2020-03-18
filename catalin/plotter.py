@@ -2,6 +2,8 @@ from matplotlib import pyplot as plt
 import matplotlib as mpl
 import numpy as np
 
+# TODO: Add the possibility of plotting our model's results.
+
 plt.style.use('dark_background')
 
 HISTORY_SIZE = 5  # Number of observations for mean calculation and progress plot
