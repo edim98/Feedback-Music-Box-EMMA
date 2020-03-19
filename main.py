@@ -126,7 +126,7 @@ def main():
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
-                # plotter.write_plot(emotions)
+                plotter.write_plot(emotions)
                 GUI.refresh()
 
         if GUI.dead:
