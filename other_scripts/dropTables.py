@@ -1,3 +1,7 @@
+'''
+Helper module for dropping collections from the database.
+'''
+
 from pymongo import MongoClient
 
 client = MongoClient()

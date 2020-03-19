@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QSlider, QLabel
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
-import audio.Playlist2 as Playlist2
+import audio.Playlist as Playlist2
 import os
 
 CAMERA_IMG_PATH = "frame.png"  # Might require os.path.join(sys.path[0], "emotions_plot.png")

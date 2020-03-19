@@ -1,3 +1,7 @@
+'''
+Helper module for getting songs information from Drive.
+'''
+
 from __future__ import print_function
 import pickle
 import os.path
@@ -5,7 +9,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from pymongo import MongoClient
-from audio.Tracklist import add_song, create_playlist
+from audio.Tracklist import add_song, create_song_collection
 from other_scripts.download import download_file
 from audio.Tracklist import get_song
 
@@ -22,11 +26,12 @@ sessionID = 'test'
 checkDataBaseFlag = True
 
 def main():
-    """Shows basic usage of the Sheets API.
-    Prints values from a sample spreadsheet.
+    """
+    Connect to the Google Api, retrieve song information, add it to the database.
+    (Optional): Also download and convert songs into a playable format.
     """
 
-    create_playlist(db, sessionID)
+    create_song_collection(db, sessionID)
 
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -58,7 +63,6 @@ def main():
     if not values:
         print('No data found.')
     else:
-        print(len(values))
         for row in values:
             descriptors = {
                 'genre': row[1],
