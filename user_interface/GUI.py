@@ -105,7 +105,7 @@ def init():
         camera_img, live_img, prog_img
     app = QApplication(sys.argv)
     window = EmmaWindow()
-    uic.loadUi(os.path.join(sys.path[0], "EMMA.ui"), window)
+    uic.loadUi(os.path.join(sys.path[0], "user_interface/EMMA.ui"), window)
     dead = False  # Used to signal if EMMA and the GUI should stop.
     frozen = False  # Used to signal if EMMA should pause.
 

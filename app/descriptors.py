@@ -3,9 +3,6 @@ Module for storing song descriptor scores and for computing song scores.
 """
 
 struct_descriptors = {
-    '''
-    Dictionary for storing song descriptor scores during the session.
-    '''
     
     'genre': {
         'rock': 0,
