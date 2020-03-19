@@ -1,7 +1,7 @@
 import cv2
 import os
 import sys
-from catalin.FaceNotDetectedError import FaceNotDetectedError
+from user_interface.FaceNotDetectedError import FaceNotDetectedError
 
 #  Detection/classifier parameters
 SCALE_FACTOR = 1.2
