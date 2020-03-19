@@ -1,7 +1,3 @@
-import multiprocessing
-#import heartrate
-# import view
-
 import os
 import threading
 import time
@@ -15,22 +11,30 @@ import catalin.GUI as GUI
 from pymongo import MongoClient
 from app import progress_history, track_history, aggdata, descriptors
 from audio import Tracklist, Playlist2
-from model.fast_and_cam import facechop
 
 #  Detection/classifier parameters
 SCALE_FACTOR = 1.2
 MIN_NEIGHBORS = 4
 
-DRAW = False  # Used to activate drawing the classifier boxes
 WHICH_CLASSIFIER = [1, 1, 1, 0]  # Choose index 1 for simple frontal, 2 for improved frontal, 3 for profile, 4 4 smile
 CLASSIFIER_PATHS = ['haarcascade_frontalface_default.xml', 'haarcascade_profileface.xml',
                     'lbpcascade_frontalface_improved.xml',
                     # This can be copied from https://raw.githubusercontent.com/opencv/opencv/master/data/lbpcascades/lbpcascade_frontalface_improved.xml
                     'haarcascade_smile.xml']
+# frontal_classifier = load_classifiers([1, 0, 0, 0])[0]
 
-threshold = -10
 
-def load_classifiers(which_classifiers):  # TODO: Decide whether or not remove this.
+THRESHOLD = -10
+
+
+def load_classifiers(which_classifiers):
+    """
+    Initializes image classifiers and returns them. Allows you to choose which to initialize by using which_classifier.
+    :param which_classifiers: List containing 1 or 0, depending on which classifier you want to load.
+    Index 1 is for simple frontal, 2 is for improved frontal, 3 for profile classifier and 4 for smile classifier.
+    Ex: [0, 0, 0, 0] would load no classifier.
+    :return: A list containing the initialized classifiers.
+    """
     result = []
 
     for index in which_classifiers:
@@ -43,6 +47,11 @@ def load_classifiers(which_classifiers):  # TODO: Decide whether or not remove t
 
 
 def draw_face_boxes(frame):
+    """
+    Loads face detection classifiers from Open-CV, detects face and draws corresponding boxes for each classifier.
+    This alters the original frames, so it should be used before performing emotion recognition, etc.
+    :param frame: Frame from camera (from Open-CV)
+    """
     gray = cv2.cvtColor(frame, 0)
     classifiers = load_classifiers(WHICH_CLASSIFIER)
 
@@ -69,6 +78,11 @@ def draw_face_boxes(frame):
 
 
 def get_frame(video_camera):
+    """
+    Checks if the camera is open and takes a frame if so.
+    :param video_camera: A cv2.VideoCapture object representing the camera.
+    :return: Last frame taken by the camera.
+    """
     if video_camera.isOpened():
         _, frame = video_camera.read()
     else:
@@ -77,15 +91,28 @@ def get_frame(video_camera):
 
 
 def display_frame(frame, title="Feedback Music Box"):
+    """
+    Mainly used for testing Open-CV functionalities. Creates a window displaying an arbitrary frame.
+    :param frame: Frame to be displayed in the window.
+    :param title: The title of the window. Can be changed. Default set to "Feedback Music Box"
+    """
     cv2.imshow(title, frame)
 
 
 def close_camera(video_camera):
+    """
+    Releases the camera from use and kills any existing windows of Open-CV.
+    :param video_camera: A cv2.VideoCapture object representing the camera.
+    """
     video_camera.release()
     cv2.destroyAllWindows()
 
 
 def remove_frame(name="frame"):
+    """
+    Attempts to remove a .png from the system with a given name.
+    :param name: The name of the .png file. Default is set to "frame"
+    """
     path_to_image = os.path.join(sys.path[0], "{}.png".format(name))
     try:
         if os.path.isfile(path_to_image):
@@ -95,12 +122,18 @@ def remove_frame(name="frame"):
         else:
             print("{}.png is apparently not a file".format(name))
     except FileNotFoundError:
+        return  # We can just ignore this, won't make a difference in functionality. FIX: use images as bytes
+        # instead of files.
+    except PermissionError:  # FIX: use sudo when starting the script
         return
-    except PermissionError:
-        return  # Fuck Tkinter and the fact that it doesn't start a thread for its interface
 
 
 def get_face_rectangles(azure_response):
+    """
+    Returns the rectangles corresponding to the faces detected by Azure
+    :param azure_response: Response from Azure Face request as dictionary.
+    :return: The rectangles of any detected face with the format: (width, height, left, top)
+    """
     result = []
     for face in azure_response:
         result.append(face.face_rectangle)
@@ -108,6 +141,12 @@ def get_face_rectangles(azure_response):
 
 
 def get_face_frames(frame, azure_response):
+    """
+    Cuts and returns images of the faces detected by Azure. Uses get_face_rectangles for cutting parameters.
+    :param frame: The frame that we want to cut from. Should be on par with azure_response.
+    :param azure_response: Response from Azure Face request as dictionary.
+    :return: A list containing frames of faces detected by Azure.
+    """
     result = []
     rectangles = get_face_rectangles(azure_response)
     for rectangle in rectangles:
@@ -120,6 +159,13 @@ def get_face_frames(frame, azure_response):
 
 
 def get_forehead_frames(frame, azure_response):
+    """
+    Estimates, cuts and returns frames containing a portion of a forehead based on the Azure response.
+    Uses get_face_rectangles for cutting parameters.
+    :param frame: The frame that we want to cut from. Should be on par with azure_response.
+    :param azure_response: Response from Azure Face request as dictionary.
+    :return: A list containing frames of forehead portions of detected faces.
+    """
     result = []
     f_x = 0.5
     f_y = 0.18
@@ -141,6 +187,12 @@ def get_forehead_frames(frame, azure_response):
 
 
 def get_forehead_frame(frame):
+    """
+    Estimates, cuts and returns frames containing a portion of a forehead from detected faces by Open-CV.
+    Uses get_face_coordinates for cutting parameters.
+    :param frame: The frame that we want to cut from.
+    :return: A list containing frames of forehead portions of detected faces.
+    """
     result = []
     f_x = 0.5
     f_y = 0.18
@@ -158,6 +210,11 @@ def get_forehead_frame(frame):
 
 
 def get_forehead_coordinates(frame):
+    """
+    Estimates and returns the coordinates of foreheads for the faces detected in the frame by Open-CV.
+    :param frame: Any frame taken from the camera.
+    :return: A list containing rectangles for the foreheads of detected faces. Formatted as (left, top, height, width).
+    """
     result = []
     f_x = 0.5
     f_y = 0.18
@@ -174,6 +231,14 @@ def get_forehead_coordinates(frame):
 
 
 def get_face_coordinates(frame):
+    """
+    Estimates and returns the coordinates of faces detected in the frame by Open-CV. Uses a simple frontal classifier
+    for detecting faces (it is required to load it as a global variable).
+    :param frame: Any frame taken from the camera.
+    :return: A list containing rectangles of the faces detected. Formatted as (left, top, height, width).
+    """
+    global frontal_classifier
+
     result = []
     gray = cv2.cvtColor(frame, 0)
     faces = frontal_classifier.detectMultiScale(gray, SCALE_FACTOR, MIN_NEIGHBORS)
@@ -181,26 +246,30 @@ def get_face_coordinates(frame):
         for (x, y, h, w) in faces:
             result.append((x, y, h, w))
     else:
-        raise FaceNotDetectedError("Face was not detected by classifier. Please adjust your positioning")
+        raise FaceNotDetectedError()
     return result
 
 
 def get_facial_emotion(frame):
-    if DRAW:
-        draw_face_boxes(frame)
+    """
+    Attempts to get facial emotion dictionary from Azure Face and saves the corresponding frame as file.
+    Attempts to remove any old version before saving the file to prevent any file system issues.
+    :param frame: Any frame taken from the camera.
+    :return: Emotions as a dictionary. Empty if no face was detected by Azure.
+    """
     remove_frame()
-    cv2.imwrite("frame.png", frame)
+    cv2.imwrite("frame.png", frame)  # Saves the file
     try:
         detected_faces = azorel.get_faces()
         emotions = azorel.get_emotion(detected_faces)
     except FaceNotDetectedError:
-        print("face.get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
+        print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
 
     return emotions
 
-def initialize():
 
+def initialize():
     client = MongoClient()
     db = client.test_database
     sessionID = 'test'
@@ -218,10 +287,12 @@ def initialize():
 
     return db, sessionID
 
+
 def getEmotionList(emotions):
     emotionList = []
     for face_id in emotions:
         return emotions[face_id]
+
 
 def main():
     db, sessionID = initialize()
@@ -256,7 +327,7 @@ def main():
                     progress_history.update_progress_log(db, sessionID, emotion_list)
                     current_song_score = descriptors.get_song_score(current_descriptors)
                     print('Current song score: %s' % current_song_score)
-                    if current_song_score <= threshold:
+                    if current_song_score <= THRESHOLD:
                         Playlist2.skip_song()
 
                 remove_frame("progress_plot")
@@ -264,35 +335,16 @@ def main():
                 plotter.write_plot(emotions)
                 GUI.refresh()
                 # print("ref")
-                
-            # print("New frame displayed in View")
-            # for (x, y, h, w) in get_forehead_coordinates(frame):
-            #     cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 50, 0), 1)
-            #     break
-            # HRV = heartrate.get_HRV(frame)
-            # cv2.putText(frame, str(HRV), (20, 28), 3, 1, (0, 50, 200))
 
-        # display_frame(frame)
         if GUI.dead:
-            print("iese")
+            print("GUI is closed, shutting down...")
             break
-            
-        # print("nu iese")
 
-    print("Closing camera")
+    print("[EMMA]: Closing the camera...")
     close_camera(vc)
     thread.join()
-    
 
 
-# frontal_classifier = load_classifiers([1, 0, 0, 0])[0]
-
-
-if __name__ == "__main__": # TODO: Add CLI arguments (mainly for choosing between Azure and our model).
+if __name__ == "__main__":  # TODO: Add CLI arguments (mainly for choosing between Azure and our model).
     main()
-    # Face_process = multiprocessing.Process(target=main, name="EMMA")
-    # Face_process.start()  # Also starts the GUI
-    # #
-    # Face_process.join()
-    # print("Face Process just joined the main process")
-    # print("EMMA will now be closed")
+    print("[EMMA]: I will be closed now. See you soon!")

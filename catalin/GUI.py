@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVB
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 import audio.Playlist2 as Playlist2
+import os
 
 CAMERA_IMG_PATH = "frame.png"  # Might require os.path.join(sys.path[0], "emotions_plot.png")
 LIVE_IMG_PATH = "emotions_plot.png"
@@ -104,7 +105,7 @@ def init():
         camera_img, live_img, prog_img
     app = QApplication(sys.argv)
     window = EmmaWindow()
-    uic.loadUi('/home/eduardc/Facultate/designprojectpersonal/catalin/EMMA.ui', window)
+    uic.loadUi(os.path.join(sys.path[0], "EMMA.ui"), window)
     dead = False  # Used to signal if EMMA and the GUI should stop.
     frozen = False  # Used to signal if EMMA should pause.
 
