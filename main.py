@@ -1,11 +1,9 @@
-import os
 import threading
 import time
 import cv2
 from catalin.FaceNotDetectedError import FaceNotDetectedError
-import catalin.azorel as azorel
+import catalin.azure_face as azure
 from catalin.face_utils import get_frame, remove_frame, close_camera
-import sys
 import catalin.plotter as plotter
 import catalin.GUI as GUI
 
@@ -26,8 +24,8 @@ def get_facial_emotion(frame):
     remove_frame()
     cv2.imwrite("frame.png", frame)  # Saves the file
     try:
-        detected_faces = azorel.get_faces()
-        emotions = azorel.get_emotion(detected_faces)
+        detected_faces = azure.get_faces()
+        emotions = azure.get_emotion(detected_faces)
     except FaceNotDetectedError:
         print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
