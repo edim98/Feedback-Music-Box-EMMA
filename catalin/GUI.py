@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QSlider, QLabel
 from PyQt5 import uic
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 import audio.Playlist2 as Playlist2
 import os
 
@@ -9,7 +9,7 @@ CAMERA_IMG_PATH = "frame.png"  # Might require os.path.join(sys.path[0], "emotio
 LIVE_IMG_PATH = "emotions_plot.png"
 PROG_IMG_PATH = "progress_plot.png"
 
-app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, camera_img, live_img, prog_img = None, None, None, None, None, None, None, None, None, None, None, None, None
+app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, camera_img, live_img, prog_img, current_song_text, now_playing_text = None, None, None, None, None, None, None, None, None, None, None, None, None, None, None
 
 
 class EmmaWindow(QMainWindow):
@@ -33,9 +33,14 @@ def play_pause():
     if play_pause_btn.text() == "Play":
         play_pause_btn.setText("Pause")
         Playlist2.play()
+        now_playing_text.show()
+        if not current_song_text.isVisible():
+            current_song_text.setText("{}".format(Playlist2.get_current_song()))
+            current_song_text.show()
     else:
         play_pause_btn.setText("Play")
         Playlist2.pause()
+        now_playing_text.hide()
 
 
 def skip():
@@ -44,6 +49,7 @@ def skip():
     """
     print("skip")
     Playlist2.skip_song()
+    current_song_text.setText("{}".format(Playlist2.get_current_song()))
 
 
 def change_volume():
@@ -52,11 +58,12 @@ def change_volume():
     :todo: Make this actually change the volume of the player/os
     """
     vol_text.setText("{}%".format(vol_slider.value()))
+    Playlist2.set_volume(vol_slider.value())
 
 
 def start_pause_EMMA():
     """
-    Called when the EMMA is paused or resumed. Enables/disables the media controls and sets
+    Called when the EMMA is paused or resumed. Enables/disables the media controls. Pauses the emotion tracking system.
     """
     global frozen
     if pause_EMMA_btn.text() == "Pause EMMA":
@@ -84,7 +91,7 @@ def register_user():
 
 def refresh():
     """
-    Called when new images are to be displayed on the screen (i.e. new reaction from the user). Sets new pixmap
+    Called when new images are to be displayed on the screen (i.e. new reaction from the user). Sets a new pixmap
     component for each of the image object on the screen. Finally, repaints the whole window.
     """
 
@@ -92,6 +99,9 @@ def refresh():
     camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))
     live_img.setPixmap(QPixmap(LIVE_IMG_PATH).scaled(live_img.width(), live_img.height(), 1, 1))
     prog_img.setPixmap(QPixmap(PROG_IMG_PATH).scaled(prog_img.width(), prog_img.height(), 1, 1))
+
+    if Playlist2.is_playing():
+        current_song_text.setText("{}".format(Playlist2.get_current_song()))
 
     window.show()
 
@@ -102,10 +112,10 @@ def init():
     their placing. References them to properly named objects so they can be used in code. Displays the GUI.
     """
     global app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, \
-        camera_img, live_img, prog_img
+        camera_img, live_img, prog_img, current_song_text, now_playing_text
     app = QApplication(sys.argv)
     window = EmmaWindow()
-    uic.loadUi(os.path.join(sys.path[0], "EMMA.ui"), window)
+    uic.loadUi(os.path.join(sys.path[0], "catalin/EMMA.ui"), window)
     dead = False  # Used to signal if EMMA and the GUI should stop.
     frozen = False  # Used to signal if EMMA should pause.
 
@@ -116,6 +126,8 @@ def init():
     register_user_btn = window.findChild(QPushButton, 'register_user_btn')
     vol_slider = window.findChild(QSlider, 'vol_slider')
     vol_text = window.findChild(QLabel, 'vol_slider_text')
+    current_song_text = window.findChild(QLabel, 'current_song_text')
+    now_playing_text = window.findChild(QLabel, 'now_playing_text')
     camera_img = window.findChild(QLabel, 'camera_img')
     live_img = window.findChild(QLabel, 'live_img')
     prog_img = window.findChild(QLabel, 'prog_img')
@@ -126,6 +138,8 @@ def init():
     vol_slider.valueChanged.connect(change_volume)
     pause_EMMA_btn.clicked.connect(start_pause_EMMA)
     register_user_btn.clicked.connect(register_user)
+    current_song_text.hide()
+    now_playing_text.hide()
 
     window.show()
 

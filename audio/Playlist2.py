@@ -136,3 +136,7 @@ def remove_song(name):
     playlist.unlock()
 
 
+def set_volume(value):
+    global media_list_player
+    if media_list_player:
+        vlc.libvlc_audio_set_volume(media_list_player.get_media_player(), value)
