@@ -1,4 +1,5 @@
 import sys
+import vlc
 
 from PyQt5.QtWidgets import (QWidget, QLabel, QScrollArea, QPushButton,
                              QApplication, QGridLayout)
@@ -32,12 +33,18 @@ class MainWindow(QWidget):
         self.dialog = SongForm(self)
 
         # Add existing songs from the database
+        # Playlist part can be deleted
+        self.playlist = vlc.MediaList()
         client = MongoClient()
         db = client['Playlists']
         playlist = db.songs
         songs = playlist.find()
         for song in songs:
             self.add_entry(song)
+            self.playlist.add_media(song['title'] + '.mp3')
+        self.media_player = vlc.MediaListPlayer()
+        self.media_player.set_playback_mode(vlc.PlaybackMode.loop)
+        self.media_player.set_media_list(self.playlist)
 
     # Opens the add song form
     def add_new_song(self):
@@ -52,6 +59,7 @@ class MainWindow(QWidget):
         remove_button.clicked.connect(lambda x: self.remove_entry(remove_button, label, play_button))
         play_button = QPushButton()
         play_button.setIcon(QIcon('play_button.jpg'))
+
         data = 'This should be changed in the final product'
 
         # Info panel
@@ -61,7 +69,7 @@ class MainWindow(QWidget):
         self.scroll_layout.addLayout(list_layout, self.row, self.column)
         self.scroll_layout.addWidget(remove_button, self.row, self.column + 3)
         self.scroll_layout.addWidget(play_button, self.row, self.column + 6)
-        play_button.clicked.connect(self.play_song)
+        play_button.clicked.connect(lambda x: self.play_song(list_layout))
         self.row += 1
 
     # Adds the song descriptors to the entry in playlist
@@ -96,9 +104,10 @@ class MainWindow(QWidget):
         play_button.deleteLater()
 
     # Plays the song
-    @staticmethod
-    def play_song():
-        print('Playing...')
+    def play_song(self, song_entry):
+        song_index = int(self.scroll_layout.indexOf(song_entry) / 3)
+        print(song_index)
+        self.media_player.play_item_at_index(song_index)
 
 
 if __name__ == '__main__':

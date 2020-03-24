@@ -85,13 +85,13 @@ class SongForm(QWidget):
             remove_button.clicked.connect(lambda x: self.parent.remove_entry(remove_button, label))
             play = QPushButton()
             play.setIcon(QIcon('play_button.jpg'))
-            play.clicked.connect(self.parent.play_song)
 
             # Add descriptors
             info = 'Genre: {0}, Dynamics: {1}, Tempo: {2}, Key: {3}, Lyrics: {4}, Language: {5}'.format(
                 self.genre.currentText(), self.dynamics.currentText(), self.tempo.currentText(), self.key.currentText(),
                 self.lyrics.currentText(), self.language.currentText())
             list_layout = self.parent.add_info_to_entry(info, label)
+            play.clicked.connect(lambda x: self.parent.play_song(list_layout))
 
             # Add to layout
             self.parent.scroll_layout.addLayout(list_layout, self.parent.row, self.parent.column)
