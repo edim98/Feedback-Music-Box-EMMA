@@ -115,7 +115,6 @@ def init():
     global app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, \
         camera_img, live_img, prog_img, current_song_text, now_playing_text
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("user_interface/emma_icon.png"))
     window = EmmaWindow()
     uic.loadUi(os.path.join(sys.path[0], "user_interface/EMMA.ui"), window)
     dead = False  # Used to signal if EMMA and the GUI should stop.
