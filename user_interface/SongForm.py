@@ -9,8 +9,9 @@ import audio.Tracklist as Tracklist
 class SongForm(QWidget):
     def __init__(self, main_window):
         super(SongForm, self).__init__()
+        self.setWindowTitle("Add a song")
+        self.setMinimumWidth(300)
         # Define parent and file selection dialog box
-
         self.file_selection = QFileDialog
 
         # Database connection
