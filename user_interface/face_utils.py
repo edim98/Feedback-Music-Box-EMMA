@@ -1,7 +1,7 @@
 import sys
 import cv2
 import os
-from catalin.FaceNotDetectedError import FaceNotDetectedError
+from user_interface.FaceNotDetectedError import FaceNotDetectedError
 
 #  Detection/classifier parameters
 SCALE_FACTOR = 1.2
@@ -12,6 +12,7 @@ CLASSIFIER_PATHS = ['haarcascade_frontalface_default.xml', 'haarcascade_profilef
                     'lbpcascade_frontalface_improved.xml',
                     # This can be copied from https://raw.githubusercontent.com/opencv/opencv/master/data/lbpcascades/lbpcascade_frontalface_improved.xml
                     'haarcascade_smile.xml']
+
 
 def load_classifiers(which_classifiers):
     """

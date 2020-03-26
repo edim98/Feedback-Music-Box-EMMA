@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>1080</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="camera_img">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>640</width>
+      <height>480</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>640</width>
+      <height>480</height>
+     </size>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="live_img">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>490</y>
+      <width>528</width>
+      <height>396</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="prog_img">
+    <property name="geometry">
+     <rect>
+      <x>538</x>
+      <y>490</y>
+      <width>561</width>
+      <height>281</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="log_text">
+    <property name="geometry">
+     <rect>
+         <x>540</x>
+         <y>780</y>
+         <width>561</width>
+         <height>210</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
+    </property>
+   </widget>
+   <widget class="QFrame" name="track_control_frame">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>30</y>
+      <width>221</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="play_pause_btn">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>20</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="toolTipDuration">
+      <number>-1</number>
+     </property>
+     <property name="text">
+      <string>Play</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="skip_btn">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>70</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Skip</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="vol_slider">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>140</y>
+       <width>160</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="sliderPosition">
+      <number>50</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="vol_slider_text">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>120</y>
+       <width>31</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>50%</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="EMMA_control_frame">
+    <property name="geometry">
+     <rect>
+      <x>950</x>
+      <y>30</y>
+      <width>221</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="pause_EMMA_btn">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>20</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Pause EMMA</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="register_user_btn">
+     <property name="geometry">
+      <rect>
+       <x>35</x>
+       <y>90</y>
+       <width>151</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Register new user</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="now_playing_text">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>260</y>
+      <width>241</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>Now Playing</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::AutoText</enum>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="margin">
+     <number>2</number>
+    </property>
+    <property name="indent">
+     <number>0</number>
+    </property>
+   </widget>
+   <widget class="QWidget" name="playlist_widget" native="true">
+    <property name="geometry">
+        <rect>
+            <x>1220</x>
+            <y>30</y>
+            <width>671</width>
+            <height>481</height>
+        </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+       <widget class="QWidget" name="gridLayoutWidget">
+           <property name="geometry">
+               <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>671</width>
+                   <height>481</height>
+               </rect>
+           </property>
+           <layout class="QGridLayout" name="grid">
+               <property name="sizeConstraint">
+                   <enum>QLayout::SetDefaultConstraint</enum>
+               </property>
+               <item row="2" column="0">
+                   <widget class="QPushButton" name="add_song_btn">
+                       <property name="sizePolicy">
+                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                           </sizepolicy>
+                       </property>
+                       <property name="text">
+                           <string>Add song</string>
+                       </property>
+                   </widget>
+               </item>
+               <item row="1" column="0">
+                   <spacer name="verticalSpacer">
+                       <property name="orientation">
+                           <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeType">
+                           <enum>QSizePolicy::Maximum</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                           <size>
+                               <width>20</width>
+                               <height>2</height>
+                           </size>
+                       </property>
+                   </spacer>
+               </item>
+               <item row="0" column="0">
+                   <widget class="QScrollArea" name="playlist_scroll">
+                       <property name="sizePolicy">
+                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                           </sizepolicy>
+                       </property>
+                       <property name="maximumSize">
+                           <size>
+                               <width>700</width>
+                               <height>700</height>
+                           </size>
+                       </property>
+                       <property name="verticalScrollBarPolicy">
+                           <enum>Qt::ScrollBarAsNeeded</enum>
+                       </property>
+                       <property name="horizontalScrollBarPolicy">
+                           <enum>Qt::ScrollBarAsNeeded</enum>
+                       </property>
+                       <property name="sizeAdjustPolicy">
+                           <enum>QAbstractScrollArea::AdjustToContents</enum>
+                       </property>
+                       <property name="widgetResizable">
+                           <bool>true</bool>
+                       </property>
+                       <widget class="QWidget" name="scroll_contents">
+                           <property name="geometry">
+                               <rect>
+                                   <x>0</x>
+                                   <y>0</y>
+                                   <width>646</width>
+                                   <height>500</height>
+                               </rect>
+                           </property>
+                           <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                                   <horstretch>0</horstretch>
+                                   <verstretch>0</verstretch>
+                               </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                               <size>
+                                   <width>645</width>
+                                   <height>500</height>
+                               </size>
+                           </property>
+                           <property name="maximumSize">
+                               <size>
+                                   <width>646</width>
+                                   <height>100000</height>
+                               </size>
+                           </property>
+                           <widget class="QWidget" name="gridLayoutWidget_2">
+                               <property name="geometry">
+                                   <rect>
+                                       <x>0</x>
+                                       <y>0</y>
+                                       <width>661</width>
+                                       <height>431</height>
+                                   </rect>
+                               </property>
+                               <layout class="QGridLayout" name="playlist_grid">
+                                   <property name="sizeConstraint">
+                                       <enum>QLayout::SetFixedSize</enum>
+                                   </property>
+                                   <property name="leftMargin">
+                                       <number>2</number>
+                                   </property>
+                                   <property name="topMargin">
+                                       <number>1</number>
+                                   </property>
+                                   <property name="rightMargin">
+                                       <number>2</number>
+                                   </property>
+                                   <property name="bottomMargin">
+                                       <number>1</number>
+                                   </property>
+                                   <property name="verticalSpacing">
+                                       <number>7</number>
+                                   </property>
+                               </layout>
+                           </widget>
+                       </widget>
+                   </widget>
+               </item>
+           </layout>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="current_song_text">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>290</y>
+      <width>521</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="margin">
+     <number>1</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

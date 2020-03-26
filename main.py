@@ -1,11 +1,11 @@
 import threading
 import time
 import cv2
-from catalin.FaceNotDetectedError import FaceNotDetectedError
-import catalin.azure_face as azure
-from catalin.face_utils import get_frame, remove_frame, close_camera
-import catalin.plotter as plotter
-import catalin.GUI as GUI
+from user_interface.FaceNotDetectedError import FaceNotDetectedError
+import user_interface.azure_face as azure
+from user_interface.face_utils import get_frame, remove_frame, close_camera
+import user_interface.plotter as plotter
+import user_interface.GUI as GUI
 
 from pymongo import MongoClient
 from app import progress_history, track_history, aggdata, descriptors
