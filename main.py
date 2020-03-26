@@ -27,8 +27,12 @@ def get_facial_emotion(frame):
     remove_frame()
     cv2.imwrite("frame.png", frame)  # Saves the file
     try:
+        # start_time = time.time()
         detected_faces = azure.get_faces()
         emotions = azure.get_emotion(detected_faces)
+        # end_time = time.time()
+
+        # print('Time taken for Azure: %f' % (end_time - start_time))
     except FaceNotDetectedError:
         print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
@@ -111,6 +115,7 @@ def main():
                 emotions = get_facial_emotion(frame)
             else:
                 # Query our model.
+                remove_frame()
                 face_isolated = facechop(frame)
                 emotions = classify(None, face_isolated)
             if emotions:
@@ -130,7 +135,10 @@ def main():
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
-                plotter.write_plot(emotions)
+                if azureFlag:
+                    plotter.write_plot(emotions)
+                else:
+                    plotter.write_plot({'': emotions})
                 GUI.refresh()
 
         if GUI.dead:

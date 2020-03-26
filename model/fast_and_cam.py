@@ -5,7 +5,7 @@
 
 import cv2
 import requests
-from time import sleep
+from time import sleep, time
 from datetime import datetime
 import threading
 
@@ -49,6 +49,7 @@ def show_distance_indicator(x, y, width, height, img):
 
 def facechop(img):  
     facedata = "./model/haarcascade_frontalface_default.xml"
+    # facedata = 'haarcascade_frontalface_default.xml'
     cascade = cv2.CascadeClassifier(facedata)
 
     minisize = (img.shape[1],img.shape[0])
@@ -70,8 +71,22 @@ def facechop(img):
         # show_distance_indicator(x, y, w, h, img)
 
         # cv2.imshow("Capturing", img)
+        cv2.imwrite('frame.png', img)
         
         return sub_face
+
+def parseResults(emotionJson):
+    res = {}
+    emotionDict = emotionJson['emotions']
+    for emotion in emotionDict:
+        res[emotion] = float(emotionDict[emotion].split('(')[1].split(')')[0])
+
+    res['contempt'] = 0
+    res['disgust'] = 0
+    res['fear'] = 0
+    res['surprise'] = 0
+
+    return res
 
 def classify(learn, face_isolated):
     if face_isolated is None:
@@ -83,11 +98,12 @@ def classify(learn, face_isolated):
 
     face_224 = cv2.resize(face_isolated, (224, 224))
     # cv2.imwrite('face.jpg', face_224)
-    cv2.imwrite('frame.png', face_224)
+    # cv2.imwrite('frame.png', face_224)
 
     byte_image = get_image_bytes(face_224)
-    emotions = send_to_server(byte_image)
-    return emotions
+    emotionJson = send_to_server(byte_image)
+
+    return parseResults(emotionJson)
     
 
 
@@ -96,14 +112,15 @@ def get_image_bytes(img):
     return im_buf_arr.tobytes()
 
 def send_to_server(byte_image):
-    send_time = datetime.now().time()
+    send_time = time()
 
     files = {'file': ('img.jpg', byte_image, 'image/jpeg', {'Expires': '0'})}
     response = requests.post('https://fastai-model.onrender.com/analyze', files=files)
     jsonboi = response.json()
 
-    receival_time = datetime.now().time()
+    receival_time = time()
     # print('\n', jsonboi, '\n send_time:', send_time, '\n receival time:', receival_time)
+    print('Time taken for our own model: %f' % (receival_time - send_time))
     return jsonboi
 
 
