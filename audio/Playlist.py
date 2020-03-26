@@ -16,8 +16,9 @@ import time
 import random
 
 media_list_player, playlist, db, sessionID = None, None, None, None
+repeatFlag = False
 
-def song_player(param_db, param_sessionID):
+def song_player(param_db, param_sessionID, repeat):
     """
     Instantiate the media list player and its playlist.
     Playlist is created with one random song in it.
@@ -25,10 +26,11 @@ def song_player(param_db, param_sessionID):
     :param param_sessionID: Current user's session ID.
     """
 
-    global media_list_player, playlist, db, sessionID
+    global media_list_player, playlist, db, sessionID, repeatFlag
 
     db = param_db
     sessionID = param_sessionID
+    repeatFlag = repeat
 
     playlist = vlc.MediaList()
 
@@ -64,13 +66,14 @@ def choose_next_song():
     :return: Nothing.
     """
 
-    global playlist, db, sessionID
+    global playlist, db, sessionID, repeatFlag
+
     queue = []
     all_songs = Tracklist.get_all_songs(db, sessionID)
     played_songs = [entry['trackID'] for entry in track_history.get_track_log(db, sessionID)]
 
     for song in all_songs:
-        if song['name'] not in played_songs:
+        if song['name'] not in played_songs or repeatFlag:
             score = descriptors.get_song_score(song['descriptors'])
             queue.append((song['name'], score))
 

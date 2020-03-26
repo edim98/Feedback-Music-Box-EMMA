@@ -14,6 +14,7 @@ from audio import Tracklist, Playlist
 from model.fast_and_cam import facechop, classify
 
 THRESHOLD = -10
+azureFlag, repeatFlag = False, False
 
 
 def get_facial_emotion(frame):
@@ -41,6 +42,8 @@ def initialize():
     :return: Nothing.
     """
 
+    global repeatFlag
+
     client = MongoClient()
     db = client.test_database
     sessionID = 'test'
@@ -54,7 +57,7 @@ def initialize():
     aggdata.create_agg_log(db, sessionID)
     print('Created aggregated data logs...')
 
-    Playlist.song_player(db, sessionID)
+    Playlist.song_player(db, sessionID, repeatFlag)
 
     return db, sessionID
 
@@ -76,7 +79,8 @@ def main():
     """
 
     # Choose running model.
-    azureFlag = CLIparser.parseFlags()
+    global azureFlag, repeatFlag
+    azureFlag, repeatFlag = CLIparser.parseFlags()
 
     db, sessionID = initialize()
 

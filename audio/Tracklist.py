@@ -2,8 +2,6 @@
 Module for accessing the contents of the Song Collection.
 """
 
-# TODO: Discuss whether to have the Song collection uniquely determined by session.
-
 def create_song_collection(db, sessionID):
     """
     Instantiate the Song Collection.
