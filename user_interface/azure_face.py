@@ -1,5 +1,6 @@
 from azure.cognitiveservices.vision.face import FaceClient, models
 from msrest.authentication import CognitiveServicesCredentials
+
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 
 # This key will serve all examples in this document.

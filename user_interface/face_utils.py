@@ -1,6 +1,8 @@
-import sys
-import cv2
 import os
+import sys
+
+import cv2
+
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 
 #  Detection/classifier parameters

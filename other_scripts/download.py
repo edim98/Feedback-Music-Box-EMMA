@@ -2,9 +2,11 @@
 Helper module for downloading songs and converting them into playable format.
 '''
 
-from pytube import YouTube
-import ffmpeg
 import os
+
+import ffmpeg
+from pytube import YouTube
+
 
 def download_file(filename, link):
     '''

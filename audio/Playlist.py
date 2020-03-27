@@ -4,16 +4,15 @@
 Module which handles the media list player.
 """
 
-import ntpath
-from audio import Tracklist
-from app import descriptors
-from app import aggdata
-from app import track_history
 import os
-import vlc
-from app import track_history
-import time
 import random
+
+import vlc
+
+from app import aggdata
+from app import descriptors
+from app import track_history
+from audio import Tracklist
 
 media_list_player, playlist, db, sessionID = None, None, None, None
 repeatFlag = False

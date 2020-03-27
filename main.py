@@ -1,17 +1,18 @@
 import threading
 import time
-import cv2
-from user_interface.FaceNotDetectedError import FaceNotDetectedError
-import user_interface.azure_face as azure
-from user_interface.face_utils import get_frame, remove_frame, close_camera
-import user_interface.plotter as plotter
-import user_interface.GUI as GUI
-import other_scripts.CLIparser as CLIparser
 
+import cv2
 from pymongo import MongoClient
+
+import other_scripts.CLIparser as CLIparser
+import user_interface.GUI as GUI
+import user_interface.azure_face as azure
+import user_interface.plotter as plotter
 from app import progress_history, track_history, aggdata, descriptors
 from audio import Tracklist, Playlist
 from model.fast_and_cam import facechop, classify
+from user_interface.FaceNotDetectedError import FaceNotDetectedError
+from user_interface.face_utils import get_frame, remove_frame, close_camera
 
 THRESHOLD = -10
 azureFlag, repeatFlag = False, False

@@ -3,8 +3,9 @@ Store a session's aggregated data.
 """
 import time
 
-from app import track_history
 from app import progress_history
+from app import track_history
+
 
 def create_agg_log(db, sessionID):
     """

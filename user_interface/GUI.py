@@ -1,10 +1,12 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QSlider, QLabel
-from PyQt5 import uic
-from PyQt5.QtGui import QPixmap, QFont, QIcon
-import user_interface.GUI_playlist as GUI_playlist
-import audio.Playlist2 as Playlist2
 import os
+import sys
+
+from PyQt5 import uic
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel
+
+import audio.Playlist as Playlist
+import user_interface.GUI_playlist as GUI_playlist
 
 CAMERA_IMG_PATH = "frame.png"  # Might require os.path.join(sys.path[0], "emotions_plot.png")
 LIVE_IMG_PATH = "emotions_plot.png"
@@ -31,16 +33,16 @@ def play_pause():
     Called when the Play/Pause button is pressed. Starts/stops/resumes a song.
     """
     print("play/pause")
-    if not Playlist2.is_playing():
+    if not Playlist.is_playing():
         play_pause_btn.setText("Pause")
-        Playlist2.play()
+        Playlist.play()
         now_playing_text.show()
         if not current_song_text.isVisible():
-            current_song_text.setText("{}".format(Playlist2.get_current_song()))
+            current_song_text.setText("{}".format(Playlist.get_current_song()))
             current_song_text.show()
     else:
         play_pause_btn.setText("Play")
-        Playlist2.pause()
+        Playlist.pause()
         now_playing_text.hide()
 
 
@@ -49,8 +51,8 @@ def skip():
     Called when the Skip button is pressed. Skips the song, according to the implementation of the media player.
     """
     print("skip")
-    Playlist2.skip_song()
-    current_song_text.setText("{}".format(Playlist2.get_current_song()))
+    Playlist.skip_song()
+    current_song_text.setText("{}".format(Playlist.get_current_song()))
     play_pause_btn.setText("Pause")
 
 
@@ -59,7 +61,7 @@ def change_volume():
     Called when the slider value changes. Changes the volume of the player accordingly.
     """
     vol_text.setText("{}%".format(vol_slider.value()))
-    Playlist2.set_volume(vol_slider.value())
+    Playlist.set_volume(vol_slider.value())
 
 
 def start_pause_EMMA():
@@ -101,8 +103,8 @@ def refresh():
     live_img.setPixmap(QPixmap(LIVE_IMG_PATH).scaled(live_img.width(), live_img.height(), 1, 1))
     prog_img.setPixmap(QPixmap(PROG_IMG_PATH).scaled(prog_img.width(), prog_img.height(), 1, 1))
 
-    if Playlist2.is_playing():
-        current_song_text.setText("{}".format(Playlist2.get_current_song()))
+    if Playlist.is_playing():
+        current_song_text.setText("{}".format(Playlist.get_current_song()))
 
     window.show()
 

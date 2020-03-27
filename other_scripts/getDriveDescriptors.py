@@ -3,15 +3,18 @@ Helper module for getting songs information from Drive.
 '''
 
 from __future__ import print_function
-import pickle
+
 import os.path
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
+import pickle
+
 from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 from pymongo import MongoClient
+
 from audio.Tracklist import add_song, create_song_collection
-from other_scripts.download import download_file
 from audio.Tracklist import get_song
+from other_scripts.download import download_file
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']

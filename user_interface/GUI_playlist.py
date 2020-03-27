@@ -1,11 +1,12 @@
-from PyQt5.QtWidgets import (QWidget, QLabel, QScrollArea, QPushButton,
-                             QApplication, QGridLayout, QSizePolicy)
-from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QWidget, QLabel, QPushButton,
+                             QGridLayout)
 from pymongo import MongoClient
-from user_interface.SongForm import SongForm
-import user_interface.GUI as GUI
-import audio.Playlist2 as Playlist2
+
+import audio.Playlist as Playlist
+import user_interface.GUI
+import user_interface.SongForm
 
 row, column, scroll_layout, scroll_contents, dialog = 0, 0, None, None, None
 
@@ -23,7 +24,7 @@ def init(window):
     column = 1
     scroll_layout = window.findChild(QGridLayout, 'playlist_grid')
     scroll_contents = window.findChild(QWidget, 'scroll_contents')
-    dialog = SongForm(window)
+    dialog = user_interface.SongForm.SongForm(window)
     add_song_btn = window.findChild(QPushButton, 'add_song_btn')
     add_song_btn.clicked.connect(add_new_song)
 
@@ -100,15 +101,15 @@ def play_entry(label):
     :param label: The label containing the name of the entry to be played or paused.
     :return:
     """
-    Playlist2.play_song(label)
-    if not Playlist2.is_playing():
-        GUI.play_pause_btn.setText("Pause")
-        GUI.now_playing_text.show()
-        GUI.current_song_text.setText("{}".format(label.text()))
+    Playlist.play_song(label)
+    if not Playlist.is_playing():
+        user_interface.GUI.play_pause_btn.setText("Pause")
+        user_interface.GUI.now_playing_text.show()
+        user_interface.GUI.current_song_text.setText("{}".format(label.text()))
         print("set text to : {}".format(label.text()))
-        if not GUI.current_song_text.isVisible():
-            GUI.current_song_text.show()
+        if not  user_interface.GUI.current_song_text.isVisible():
+            user_interface.GUI.current_song_text.show()
     else:
-        GUI.play_pause_btn.setText("Play")
-        Playlist2.pause()
-        GUI.now_playing_text.hide()
+        user_interface.GUI.play_pause_btn.setText("Play")
+        Playlist.pause()
+        user_interface.GUI.now_playing_text.hide()

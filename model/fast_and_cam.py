@@ -3,11 +3,11 @@
 # TODO: Incorporate this in the main module.
 # TODO: Change response to another format.
 
+import threading
+from time import sleep, time
+
 import cv2
 import requests
-from time import sleep, time
-from datetime import datetime
-import threading
 
 
 # Angry, happy, neutral, sad
