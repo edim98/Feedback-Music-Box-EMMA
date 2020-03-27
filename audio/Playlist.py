@@ -207,3 +207,15 @@ def remove_song(name):
     playlist.unlock()
 
 
+def set_volume(value):
+    global media_list_player
+    if media_list_player:
+        vlc.libvlc_audio_set_volume(media_list_player.get_media_player(), value)
+
+
+def play_song(label):
+    name = label.text()
+    path = os.path.relpath('./audio/tracks/' + name + '.mp3')
+    playlist.add_media(path)
+
+    media_list_player.play_item_at_index(len(playlist) - 1)
