@@ -54,6 +54,7 @@ def initialize():
     aggdata.create_agg_log(db, sessionID)
     print('Created aggregated data logs...')
 
+    #TODO: raise IndexError('Cannot choose from an empty sequence') from None
     Playlist.song_player(db, sessionID)
 
     return db, sessionID
