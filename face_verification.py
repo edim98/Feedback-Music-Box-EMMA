@@ -45,6 +45,12 @@ class FaceVerification:
         return face_ids
 
     def find_verified_face(self, detected_faces):
+        """
+        Attempts to find and return a face that would belong to the person specified upon initialization of the module.
+        If not found, returns None.
+        :param detected_faces: a face bunch from azure, where we don't know who they belong to
+        :return: A tuple of a face that belongs to the target person, and the confidence. (None, -1) if no face matches.
+        """
         for face in detected_faces:
             current_face_id = face.face_id
             target_face_id = self.target_face_id
