@@ -205,7 +205,6 @@ def get_frame(video_camera):
     :return: Last frame taken by the camera.
     """
     if video_camera.isOpened():
-        print("getting frame")
         _, frame = video_camera.read()
     else:
         raise Exception("Camera is not opened")

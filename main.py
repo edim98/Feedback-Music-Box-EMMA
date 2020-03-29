@@ -1,6 +1,8 @@
 import threading
 import time
 import cv2
+
+from face_verification import FaceVerification
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 import user_interface.azure_face as azure
 from user_interface.face_utils import get_frame, remove_frame, close_camera
@@ -16,7 +18,7 @@ from model.fast_and_cam import facechop, classify
 THRESHOLD = -10
 
 
-def get_facial_emotion(frame):
+def get_facial_emotion(frame, face_verification = None):
     """
     Attempts to get facial emotion dictionary from Azure Face and saves the corresponding frame as file.
     Attempts to remove any old version before saving the file to prevent any file system issues.
@@ -27,7 +29,11 @@ def get_facial_emotion(frame):
     cv2.imwrite("frame.png", frame)  # Saves the file
     try:
         detected_faces = azure.get_faces()
-        emotions = azure.get_emotion(detected_faces)
+        if face_verification is not None:
+            verified_face, confidence = face_verification.find_verified_face(detected_faces)
+            emotions = azure.get_emotion([verified_face])
+        else:
+            emotions = azure.get_emotion(detected_faces)
     except FaceNotDetectedError:
         print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
@@ -81,6 +87,8 @@ def main():
 
     db, sessionID = initialize()
 
+    fv = FaceVerification("mantas")
+
     # Start the camera and the GUI.
     thread = threading.Thread(target=GUI.run)
     thread.setDaemon(True)
@@ -105,7 +113,7 @@ def main():
         if not GUI.dead and not GUI.frozen:
             if azureFlag:
                 # Query Azure.
-                emotions = get_facial_emotion(frame)
+                emotions = get_facial_emotion(frame, fv)
             else:
                 # Query our model.
                 face_isolated = facechop(frame)

@@ -67,7 +67,7 @@ class FaceVerification:
 
 
 if __name__ == "__main__":
-    fv = FaceVerification("me")
+    fv = FaceVerification("mantas")
 
     comp_photos = glob.glob("comp/what.jpg")
     for photo_fn in comp_photos:
