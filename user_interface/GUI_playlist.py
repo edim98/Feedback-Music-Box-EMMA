@@ -13,6 +13,10 @@ row, column, scroll_layout, scroll_contents, dialog = 0, 0, None, None, None
 client = MongoClient()
 db = client.test_database
 
+#TODO: Change order in which name and artist are added in the playlist.
+#TODO: Add artist field in the database (maybe even remove artist field??)
+#TODO: Descriptors are added with capital first letter -> errors.
+#TODO: Add an import existing playlist option.
 
 def init(window):
     """

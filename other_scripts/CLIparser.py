@@ -17,6 +17,9 @@ parser.add_argument('-r', '--repeat', action='store_true', help='enable repetiti
 # Add the version flag.
 parser.add_argument('-v', '--version', action='version', version='E.M.M.A. 1.0 alpha', help='print current version')
 
+# Add the test flag.
+parser.add_argument('-t', '--test', action='store_true', help='run in a test environment')
+
 
 def parseFlags():
     '''
@@ -33,4 +36,7 @@ def parseFlags():
 
     if args.repeat:
         print('E.M.M.A. will repeat songs')
-    return args.azure, args.repeat
+
+    if args.test:
+        print('Running in test environment...')
+    return args

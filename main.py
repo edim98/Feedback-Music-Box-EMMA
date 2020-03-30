@@ -15,8 +15,7 @@ from user_interface.FaceNotDetectedError import FaceNotDetectedError
 from user_interface.face_utils import get_frame, remove_frame, close_camera
 
 THRESHOLD = -10
-azureFlag, repeatFlag = False, False
-
+args = None
 
 def get_facial_emotion(frame):
     """
@@ -47,11 +46,17 @@ def initialize():
     :return: Nothing.
     """
 
-    global repeatFlag
+    global args
 
     client = MongoClient()
     db = client.test_database
-    sessionID = 'test'
+
+    if args.test:
+        sessionID = 'test'
+    else:
+        import random
+        import string
+        sessionID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=15))
 
     track_history.create_track_log(db, sessionID)
     print('Created track history...')
@@ -62,7 +67,7 @@ def initialize():
     aggdata.create_agg_log(db, sessionID)
     print('Created aggregated data logs...')
 
-    Playlist.song_player(db, sessionID, repeatFlag)
+    Playlist.song_player(db, sessionID, args.repeat)
 
     return db, sessionID
 
@@ -72,8 +77,6 @@ def getEmotionList(emotions):
     Get the emotion list from an Azure response.
     :return: A list of user emotions from an Azure response.
     """
-
-    emotionList = []
     for face_id in emotions:
         return emotions[face_id]
 
@@ -84,8 +87,8 @@ def main():
     """
 
     # Choose running model.
-    global azureFlag, repeatFlag
-    azureFlag, repeatFlag = CLIparser.parseFlags()
+    global args
+    args = CLIparser.parseFlags()
 
     db, sessionID = initialize()
 
@@ -111,7 +114,7 @@ def main():
         start_time = time.time()
 
         if not GUI.dead and not GUI.frozen:
-            if azureFlag:
+            if args.azure:
                 # Query Azure.
                 emotions = get_facial_emotion(frame)
             else:
@@ -136,7 +139,7 @@ def main():
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
-                if azureFlag:
+                if args.azure:
                     plotter.write_plot(emotions)
                 else:
                     plotter.write_plot({'': emotions})
@@ -151,6 +154,6 @@ def main():
     thread.join()
 
 
-if __name__ == "__main__":  # TODO: Add CLI arguments (mainly for choosing between Azure and our model).
+if __name__ == "__main__":
     main()
     print("[EMMA]: I will be closed now. See you soon!")

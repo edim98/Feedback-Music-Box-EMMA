@@ -120,7 +120,7 @@ def get_song_score(song_descriptors):
 
     return score
 
-def update_descriptors(emotion_list, song_descriptors): # TODO Adjust implementation to incorporate our own model's results.
+def update_descriptors(emotion_list, song_descriptors): # TODO Tinker with parameters.
     """
     Update the scores of each descriptor and its sub-descriptors.
     :param emotion_list: A list of user emotions retrieved from the model at a given time.

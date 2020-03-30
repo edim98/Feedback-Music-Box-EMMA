@@ -1,7 +1,5 @@
 # from fastai.vision import *
 
-# TODO: Incorporate this in the main module.
-# TODO: Change response to another format.
 
 import threading
 from time import sleep, time

@@ -17,6 +17,42 @@ from audio import Tracklist
 media_list_player, playlist, db, sessionID = None, None, None, None
 repeatFlag = False
 
+encoding = {
+    '%20': ' ',
+    '%21': '!',
+    '%22': '\"',
+    '%23': '#',
+    '%24': '$',
+    '%25': '%',
+    '%26': '&',
+    '%27': '\'',
+    '%28': '(',
+    '%29': ')',
+    '%2A': '*',
+    '%2B': '+',
+    '%2C': ',',
+    '%2D': '-',
+    '%2E': '.',
+    '%2F': '/',  # NOT SUPPORTED IN FILE NAME!
+    '%3A': ':',  # NOT SUPPORTED IN FILE NAME!
+    '%3B': ';',
+    '%3C': '<',
+    '%3D': '=',
+    '%3E': '>',
+    '%3F': '?',
+    '%40': '@',
+    '%5B': '[',
+    '%5C': '\\',
+    '%5D': ']',
+    '%5E': '^',
+    '%5F': '_',
+    '%60': '`',
+    '%7B': '{',
+    '%7C': '|',
+    '%7D': '}',
+    '%7E': '~'
+}
+
 def song_player(param_db, param_sessionID, repeat):
     """
     Instantiate the media list player and its playlist.
@@ -34,10 +70,10 @@ def song_player(param_db, param_sessionID, repeat):
     playlist = vlc.MediaList()
 
     # Add a random song to the playlist.
-    allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db, sessionID))]
-    random_song = random.choice(allSongs)
-    path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
-    playlist.add_media(path)
+    # allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db, sessionID))]
+    # random_song = random.choice(allSongs)
+    # path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
+    # playlist.add_media(path)
 
     # Link playlist to media list player.
     media_list_player = vlc.MediaListPlayer()
@@ -159,10 +195,15 @@ def get_current_song():
     :return: The name of the song currently played.
     """
 
-    global media_list_player
+    global media_list_player, encoding
 
     name = media_list_player.get_media_player().get_media().get_mrl().split('/')[-1][:-4]
-    name = name.replace("%20", " ")
+
+    for key in encoding:
+        name = name.replace(key, encoding[key])
+    # name = name.replace()
+
+
     return name
 
 
@@ -216,5 +257,5 @@ def play_song(label):
     name = label.text()
     path = os.path.relpath('./audio/tracks/' + name + '.mp3')
     playlist.add_media(path)
-
     media_list_player.play_item_at_index(len(playlist) - 1)
+    # media_list_player.next()
