@@ -1,0 +1,68 @@
+import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
+import os
+import time
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
+
+# Stop the system/music
+def stop(channel):
+    print("Stop Button was pushed!")
+    check_volume()
+
+# Skip the current song
+def skip(channel):
+    print("Skip Button was pushed!")
+    set_volume(check_volume())
+
+# Remap a value from one range to another
+def remap_range(value, left_min, left_max, right_min, right_max):
+    # this remaps a value from original (left) range to new (right) range
+    # Figure out how 'wide' each range is
+    left_span = left_max - left_min
+    right_span = right_max - right_min
+ 
+    # Convert the left range into a 0-1 range (int)
+    valueScaled = int(value - left_min) / int(left_span)
+ 
+    # Convert the 0-1 range into a value in the right range.
+    return int(right_min + (valueScaled * right_span))
+
+# Check the current desired volume, as read from the potentiometer
+def check_volume():
+    # convert 16bit adc0 (0-65535) trim pot read into 0-100 volume level
+    set_volume = remap_range(trim_pot, 0, 65535, 0, 100)
+    print('Volume = {volume}%' .format(volume = set_volume))
+    return set_volume
+
+# Set the system volume to the given value
+def set_volume(vol):
+    set_vol_cmd = 'sudo amixer cset numid=1 -- {volume}% > /dev/null' \
+    .format(volume = vol)
+    os.system(set_vol_cmd)
+
+GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
+
+GPIO.setup(8, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+GPIO.add_event_detect(8,GPIO.RISING,callback=stop) # Setup event on pin 10 rising edge
+
+GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+GPIO.add_event_detect(10,GPIO.RISING,callback=skip) # Setup event on pin 10 rising edge
+
+# create the spi bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+ 
+# create the cs (chip select)
+cs = digitalio.DigitalInOut(board.D22)
+ 
+# create the mcp object
+mcp = MCP.MCP3008(spi, cs)
+ 
+# create an analog input channel on pin 0
+chan0 = AnalogIn(mcp, MCP.P0)
+
+message = input("Press enter to quit\n\n") # Run until someone presses enter
+GPIO.cleanup() # Clean up
