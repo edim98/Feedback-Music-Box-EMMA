@@ -6,6 +6,9 @@ from pymongo import MongoClient
 
 import other_scripts.CLIparser as CLIparser
 import user_interface.GUI as GUI
+
+from face_verification import FaceVerification
+from user_interface.FaceNotDetectedError import FaceNotDetectedError
 import user_interface.azure_face as azure
 import user_interface.plotter as plotter
 from app import progress_history, track_history, aggdata, descriptors
@@ -17,7 +20,7 @@ from user_interface.face_utils import get_frame, remove_frame, close_camera
 THRESHOLD = -10
 args = None
 
-def get_facial_emotion(frame):
+def get_facial_emotion(frame, face_verification = None):
     """
     Attempts to get facial emotion dictionary from Azure Face and saves the corresponding frame as file.
     Attempts to remove any old version before saving the file to prevent any file system issues.
@@ -29,10 +32,11 @@ def get_facial_emotion(frame):
     try:
         # start_time = time.time()
         detected_faces = azure.get_faces()
-        emotions = azure.get_emotion(detected_faces)
-        # end_time = time.time()
-
-        # print('Time taken for Azure: %f' % (end_time - start_time))
+        if face_verification is not None:
+            verified_face, confidence = face_verification.find_verified_face(detected_faces)
+            emotions = azure.get_emotion([verified_face])
+        else:
+            emotions = azure.get_emotion(detected_faces)
     except FaceNotDetectedError:
         print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
@@ -67,7 +71,8 @@ def initialize():
     aggdata.create_agg_log(db, sessionID)
     print('Created aggregated data logs...')
 
-    Playlist.song_player(db, sessionID, args.repeat)
+    #TODO: raise IndexError('Cannot choose from an empty sequence') from None
+    Playlist.song_player(db, sessionID)
 
     return db, sessionID
 
@@ -91,6 +96,8 @@ def main():
     args = CLIparser.parseFlags()
 
     db, sessionID = initialize()
+
+    fv = FaceVerification("mantas")
 
     # Start the camera and the GUI.
     thread = threading.Thread(target=GUI.run)
@@ -116,7 +123,7 @@ def main():
         if not GUI.dead and not GUI.frozen:
             if args.azure:
                 # Query Azure.
-                emotions = get_facial_emotion(frame)
+                emotions = get_facial_emotion(frame, fv)
             else:
                 # Query our model.
                 remove_frame()
