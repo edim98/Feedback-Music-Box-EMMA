@@ -7,8 +7,7 @@ from pymongo import MongoClient
 import other_scripts.CLIparser as CLIparser
 import user_interface.GUI as GUI
 
-from face_verification import FaceVerification
-from user_interface.FaceNotDetectedError import FaceNotDetectedError
+from user_verification.face_verification import FaceVerification
 import user_interface.azure_face as azure
 import user_interface.plotter as plotter
 from app import progress_history, track_history, aggdata, descriptors
@@ -34,7 +33,10 @@ def get_facial_emotion(frame, face_verification = None):
         detected_faces = azure.get_faces()
         if face_verification is not None:
             verified_face, confidence = face_verification.find_verified_face(detected_faces)
-            emotions = azure.get_emotion([verified_face])
+            if verified_face is not None:
+                emotions = azure.get_emotion([verified_face])
+            else:
+                emotions = {}
         else:
             emotions = azure.get_emotion(detected_faces)
     except FaceNotDetectedError:
@@ -72,7 +74,7 @@ def initialize():
     print('Created aggregated data logs...')
 
     #TODO: raise IndexError('Cannot choose from an empty sequence') from None
-    Playlist.song_player(db, sessionID)
+    Playlist.song_player(db, sessionID, args.repeat)
 
     return db, sessionID
 
@@ -97,12 +99,13 @@ def main():
 
     db, sessionID = initialize()
 
-    fv = FaceVerification("mantas")
 
     # Start the camera and the GUI.
     thread = threading.Thread(target=GUI.run)
     thread.setDaemon(True)
     vc = cv2.VideoCapture(0)
+    fv = FaceVerification(sessionID)
+    GUI.setSomeVariables(vc, sessionID, fv)
     # vc.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     thread.start()
 
@@ -123,7 +126,10 @@ def main():
         if not GUI.dead and not GUI.frozen:
             if args.azure:
                 # Query Azure.
-                emotions = get_facial_emotion(frame, fv)
+                if fv.getStatus():
+                    emotions = get_facial_emotion(frame, fv)
+                else:
+                    emotions = get_facial_emotion(frame, None)
             else:
                 # Query our model.
                 remove_frame()

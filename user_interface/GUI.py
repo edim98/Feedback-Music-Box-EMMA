@@ -1,19 +1,21 @@
 import os
 import sys
 
+from cv2 import imwrite
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel
 
 import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist
+from user_interface.face_utils import get_frame
 
 CAMERA_IMG_PATH = "frame.png"  # Might require os.path.join(sys.path[0], "emotions_plot.png")
 LIVE_IMG_PATH = "emotions_plot.png"
 PROG_IMG_PATH = "progress_plot.png"
 
 app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, camera_img, live_img, prog_img, current_song_text, now_playing_text = None, None, None, None, None, None, None, None, None, None, None, None, None, None, None
-
+webcam, sessionID, faceverification = None, None, None
 
 class EmmaWindow(QMainWindow):
     def __init__(self):
@@ -27,6 +29,11 @@ class EmmaWindow(QMainWindow):
 
     # Maybe a refresh signal with QThread
 
+def setSomeVariables(vc, session, fv):
+    global webcam, sessionID, faceverification
+    webcam = vc
+    sessionID = session
+    faceverification = fv
 
 def play_pause():
     """
@@ -89,7 +96,24 @@ def register_user():
     registering/calibration process takes place.
     :todo: Make this.
     """
-    print("TODO REGISTER USER // CALIBRATION")
+    global webcam, sessionID, faceverification
+
+    frame = get_frame(webcam)
+    path = os.path.relpath('user_verification/' + sessionID)
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    imwrite(path + '/' + sessionID + '.png', frame)
+
+    face_id = faceverification.get_target_face_id()
+    if face_id:
+        faceverification.set_target_face_id(face_id)
+        faceverification.setStatus(True)
+    else:
+        print('face id not valid!')
+
+
+
+
 
 
 def refresh():

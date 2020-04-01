@@ -1,4 +1,5 @@
 import glob
+import os
 
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
@@ -8,25 +9,35 @@ class FaceVerification:
     KEY = 'b9728001037d4e409030bd1ed1cc687f'
     ENDPOINT = 'https://designprojectfacetest.cognitiveservices.azure.com/'
     face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+    isSetUp = False
 
     def __init__(self, target_person_name):
         if len(target_person_name) == 0:
             raise ValueError("Cannot supply person name of length 0 to the FaceVerification module")
 
         self.person_name = target_person_name
-        self.target_face_id = self.__get_target_face_id()
+        self.target_face_id = self.get_target_face_id()
         print("Initialized the FaceVerification module with name", self.person_name,
               ", and face_id:", self.target_face_id)
 
-    def __get_target_face_id(self):
+    def set_target_face_id(self, face_id):
+        self.target_face_id = face_id
+
+    def get_target_face_id(self):
         img_fns = self.__get_images_of_target_person()
-        return self.__get_face_ids(img_fns)[0]  # only taking a single face as the target for now
+        if img_fns:
+            return self.__get_face_ids(img_fns)[0]  # only taking a single face as the target for now
+        return None
 
     def __get_images_of_target_person(self):
-        path = "user_verification/" + self.person_name
-        img_files = glob.glob(path + "//*.jpg")
+        # path = self.person_name
+        path = os.path.relpath('user_verification/' + self.person_name)
+        img_files = glob.glob(path + "/*.png")
         if len(img_files) == 0:
-            raise Exception("You must first supply some example pictures of the patient in this session")
+            # raise Exception("You must first supply some example pictures of the patient in this session")
+            print('No images of target person were found...')
+            self.isSetUp = False
+            return None
         else:
             return img_files
 
@@ -54,6 +65,8 @@ class FaceVerification:
         for face in detected_faces:
             current_face_id = face.face_id
             target_face_id = self.target_face_id
+            print('cur face: ', current_face_id)
+            print('target face: ', target_face_id)
             verify_result = self.face_client.face.verify_face_to_face(current_face_id, target_face_id)
 
             if verify_result.is_identical:
@@ -64,6 +77,13 @@ class FaceVerification:
                 continue
 
         return None, -1
+
+    def getStatus(self):
+        print(self.isSetUp)
+        return self.isSetUp
+
+    def setStatus(self, status):
+        self.isSetUp = status
 
 
 if __name__ == "__main__":
