@@ -1,3 +1,7 @@
+'''
+Helper module for creating collections.
+'''
+
 from pymongo import MongoClient
 
 client = MongoClient()
@@ -8,13 +12,5 @@ try:
     track_collection = db['track_collection_test']
     progress_collection = db['progress_collection_test']
     agg_collection = db['agg_collection_test']
-
-    progress_collection.insert_one({
-        'sal': 'cf'
-    })
-
-    agg_collection.insert_one({
-        'o': 'nu'
-    })
 except:
-    print('Pula mea...')
+    print('Error...')

@@ -1,17 +1,21 @@
 import threading
 import time
-import cv2
-from user_interface.FaceNotDetectedError import FaceNotDetectedError
-import user_interface.azure_face as azure
-from user_interface.face_utils import get_frame, remove_frame, close_camera
-import user_interface.plotter as plotter
-import user_interface.GUI as GUI
 
+import cv2
 from pymongo import MongoClient
+
+import other_scripts.CLIparser as CLIparser
+import user_interface.GUI as GUI
+import user_interface.azure_face as azure
+import user_interface.plotter as plotter
 from app import progress_history, track_history, aggdata, descriptors
-from audio import Tracklist, Playlist2
+from audio import Tracklist, Playlist
+from model.fast_and_cam import facechop, classify
+from user_interface.FaceNotDetectedError import FaceNotDetectedError
+from user_interface.face_utils import get_frame, remove_frame, close_camera
 
 THRESHOLD = -10
+azureFlag, repeatFlag = False, False
 
 
 def get_facial_emotion(frame):
@@ -24,8 +28,12 @@ def get_facial_emotion(frame):
     remove_frame()
     cv2.imwrite("frame.png", frame)  # Saves the file
     try:
+        # start_time = time.time()
         detected_faces = azure.get_faces()
         emotions = azure.get_emotion(detected_faces)
+        # end_time = time.time()
+
+        # print('Time taken for Azure: %f' % (end_time - start_time))
     except FaceNotDetectedError:
         print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
@@ -34,6 +42,13 @@ def get_facial_emotion(frame):
 
 
 def initialize():
+    """
+    Initialize the MongoDB client and create all collections.
+    :return: Nothing.
+    """
+
+    global repeatFlag
+
     client = MongoClient()
     db = client.test_database
     sessionID = 'test'
@@ -47,20 +62,34 @@ def initialize():
     aggdata.create_agg_log(db, sessionID)
     print('Created aggregated data logs...')
 
-    Playlist2.song_player(db, sessionID)
+    Playlist.song_player(db, sessionID, repeatFlag)
 
     return db, sessionID
 
 
 def getEmotionList(emotions):
+    """
+    Get the emotion list from an Azure response.
+    :return: A list of user emotions from an Azure response.
+    """
+
     emotionList = []
     for face_id in emotions:
         return emotions[face_id]
 
 
 def main():
+    """
+    Main method.
+    """
+
+    # Choose running model.
+    global azureFlag, repeatFlag
+    azureFlag, repeatFlag = CLIparser.parseFlags()
+
     db, sessionID = initialize()
 
+    # Start the camera and the GUI.
     thread = threading.Thread(target=GUI.run)
     thread.setDaemon(True)
     vc = cv2.VideoCapture(0)
@@ -73,6 +102,7 @@ def main():
 
         frame = get_frame(vc)
 
+        # Query the Model once every 3 seconds.
         end_time = time.time()
 
         if end_time - start_time < 3.1:
@@ -81,24 +111,36 @@ def main():
         start_time = time.time()
 
         if not GUI.dead and not GUI.frozen:
-            emotions = get_facial_emotion(frame)
+            if azureFlag:
+                # Query Azure.
+                emotions = get_facial_emotion(frame)
+            else:
+                # Query our model.
+                remove_frame()
+                face_isolated = facechop(frame)
+                emotions = classify(None, face_isolated)
             if emotions:
-                if Playlist2.is_playing():
-                    current_song = Playlist2.get_current_song()
+                if Playlist.is_playing():
+                    # Update global descriptors based on song descriptors and user emotions.
+                    current_song = Playlist.get_current_song()
                     current_descriptors = Tracklist.get_song(db, sessionID, current_song)['descriptors']
                     emotion_list = getEmotionList(emotions)
                     descriptors.update_descriptors(emotion_list, current_descriptors)
                     progress_history.update_progress_log(db, sessionID, emotion_list)
                     current_song_score = descriptors.get_song_score(current_descriptors)
                     print('Current song score: %s' % current_song_score)
+
+                    # Change song if song score is low.
                     if current_song_score <= THRESHOLD:
-                        Playlist2.skip_song()
+                        Playlist.skip_song()
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
-                plotter.write_plot(emotions)
+                if azureFlag:
+                    plotter.write_plot(emotions)
+                else:
+                    plotter.write_plot({'': emotions})
                 GUI.refresh()
-                # print("ref")
 
         if GUI.dead:
             print("GUI is closed, shutting down...")

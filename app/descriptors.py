@@ -1,4 +1,9 @@
+"""
+Module for storing song descriptor scores and for computing song scores.
+"""
+
 struct_descriptors = {
+    
     'genre': {
         'rock': 0,
         'pop': 0,
@@ -80,6 +85,9 @@ struct_descriptors = {
     }
 }
 
+'''
+Multiplier parameters for determining individual song scores.
+'''
 happinessMultiplier = 1.0
 neutralMultiplier = 0.1
 surpriseMultiplier = 0.25
@@ -91,11 +99,20 @@ contemptMultiplier = -5.0
 
 
 def get_descriptors():
+    """
+    Get latest update of the song descriptors dictionary.
+    :return: Latest update of the song descriptors dictionary.
+    """
     global struct_descriptors
 
     return struct_descriptors
 
 def get_song_score(song_descriptors):
+    """
+    Compute the score of a song based on the score of its descriptors.
+    :param song_descriptors: The unique descriptors associated with this song.
+    :return: The score of the song.
+    """
     global struct_descriptors
     score = 0
     for descriptor in song_descriptors:
@@ -104,6 +121,12 @@ def get_song_score(song_descriptors):
     return score
 
 def update_descriptors(emotion_list, song_descriptors): # TODO Adjust implementation to incorporate our own model's results.
+    """
+    Update the scores of each descriptor and its sub-descriptors.
+    :param emotion_list: A list of user emotions retrieved from the model at a given time.
+    :param song_descriptors: The unique descriptors associated with this song.
+    :return: Latest update of the song descriptors dictionary.
+    """
 
     global struct_descriptors
 

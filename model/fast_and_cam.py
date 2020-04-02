@@ -1,12 +1,16 @@
 # from fastai.vision import *
 
 # TODO: Incorporate this in the main module.
+# TODO: Change response to another format.
+
+import threading
+from time import sleep, time
 
 import cv2
 import requests
-from time import sleep
-from datetime import datetime
-import threading
+
+
+# Angry, happy, neutral, sad
 
 def get_face_expanded(x, y, width, height, img):
     frame_height = len(img)
@@ -44,7 +48,8 @@ def show_distance_indicator(x, y, width, height, img):
     cv2.rectangle(img, (x,y), (x+width,y+height), color)
 
 def facechop(img):  
-    facedata = "haarcascade_frontalface_default.xml"
+    facedata = "./model/haarcascade_frontalface_default.xml"
+    # facedata = 'haarcascade_frontalface_default.xml'
     cascade = cv2.CascadeClassifier(facedata)
 
     minisize = (img.shape[1],img.shape[0])
@@ -63,11 +68,25 @@ def facechop(img):
         x, y, w, h = [ v for v in f ]
 
         sub_face = get_face_expanded(x, y, w, h, img)
-        show_distance_indicator(x, y, w, h, img)
+        # show_distance_indicator(x, y, w, h, img)
 
-        cv2.imshow("Capturing", img)
+        # cv2.imshow("Capturing", img)
+        cv2.imwrite('frame.png', img)
         
         return sub_face
+
+def parseResults(emotionJson):
+    res = {}
+    emotionDict = emotionJson['emotions']
+    for emotion in emotionDict:
+        res[emotion] = float(emotionDict[emotion].split('(')[1].split(')')[0])
+
+    res['contempt'] = 0
+    res['disgust'] = 0
+    res['fear'] = 0
+    res['surprise'] = 0
+
+    return res
 
 def classify(learn, face_isolated):
     if face_isolated is None:
@@ -78,10 +97,13 @@ def classify(learn, face_isolated):
     # face_isolated = cv2.cvtColor(face_isolated, cv2.COLOR_BGR2RGB)
 
     face_224 = cv2.resize(face_isolated, (224, 224))
-    cv2.imwrite('face.jpg', face_224)
+    # cv2.imwrite('face.jpg', face_224)
+    # cv2.imwrite('frame.png', face_224)
 
     byte_image = get_image_bytes(face_224)
-    send_to_server(byte_image)
+    emotionJson = send_to_server(byte_image)
+
+    return parseResults(emotionJson)
     
 
 
@@ -90,14 +112,16 @@ def get_image_bytes(img):
     return im_buf_arr.tobytes()
 
 def send_to_server(byte_image):
-    send_time = datetime.now().time()
+    send_time = time()
 
     files = {'file': ('img.jpg', byte_image, 'image/jpeg', {'Expires': '0'})}
     response = requests.post('https://fastai-model.onrender.com/analyze', files=files)
     jsonboi = response.json()
 
-    receival_time = datetime.now().time()
-    print('\n', jsonboi, '\n send_time:', send_time, '\n receival time:', receival_time)
+    receival_time = time()
+    # print('\n', jsonboi, '\n send_time:', send_time, '\n receival time:', receival_time)
+    print('Time taken for our own model: %f' % (receival_time - send_time))
+    return jsonboi
 
 
 if __name__ == "__main__":

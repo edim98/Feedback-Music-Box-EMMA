@@ -1,15 +1,29 @@
-'''
+"""
 Module that handles a session's progress.
-'''
+"""
 
 import time
 
 def create_progress_log(db, sessionID):
+    """
+    Instantiate the Progress Collection.
+    :param db: The database object.
+    :param sessionID: Current user's session ID.
+    :return: The Progress Collection object.
+    """
+
     collection_name = 'progress_collection_' + sessionID
     progress_collection = db[collection_name]
     return progress_collection
 
 def update_progress_log(db, sessionID, emotion_list):
+    """
+    Add new entries in the Progress Collection.
+    :param db: The database object.
+    :param sessionID: Current user's session ID.
+    :param emotion_list: A list of user emotions retrieved from the model at a given time.
+    :return: Nothing.
+    """
 
     progress_collection = db['progress_collection_' + sessionID]
 
@@ -29,6 +43,12 @@ def update_progress_log(db, sessionID, emotion_list):
         print('Unable to update collection: progress_collection!')
 
 def delete_track_log(db, sessionID):
+    """
+    Drop the Progress Collection.
+    :param db: The database object.
+    :param sessionID: Current user's session ID.
+    :return: Nothing.
+    """
     collection_name = 'progress_collection_' + sessionID
     try:
         db[collection_name].drop()
@@ -36,6 +56,14 @@ def delete_track_log(db, sessionID):
         print('Could not drop collection: progress_collection!')
 
 def get_progress_log(db, sessionID, start = '', end = ''):
+    """
+    Retrieve all Collection entries in a given time frame.
+    :param db: The database object.
+    :param sessionID: Current user's session ID.
+    :param start: (Optional) The start of the time frame.
+    :param end: (Optional) The end of the time frame.
+    :return: A list of entries in a given time frame.
+    """
 
     progress_collection = db['progress_collection_' + sessionID]
 
@@ -59,6 +87,14 @@ def get_progress_log(db, sessionID, start = '', end = ''):
     return result
 
 def get_progress_trend(db, sessionID, start = '', end = ''):
+    """
+    Retrieve all Collection entries in a given time frame,
+    in a friendly format suited for updating the Aggregate Collection.
+    :param db: The database object.
+    :param sessionID: Current user's session ID.
+    :param start: (Optional) The start of the time frame.
+    :param end: (Optional) The end of the time frame.
+    """
 
     progress_collection = db['progress_collection_' + sessionID]
 

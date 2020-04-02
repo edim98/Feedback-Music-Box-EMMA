@@ -1,11 +1,13 @@
-from PyQt5.QtWidgets import (QWidget, QLabel, QPushButton, QLineEdit,
+from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
                              QFormLayout, QFileDialog, QErrorMessage,
                              QComboBox)
 from PyQt5.QtGui import QIcon
 
-import user_interface.GUI_playlist as GUI_playlist
 import audio.Tracklist as Tracklist
+import user_interface.GUI_playlist
 
+
+# from user_interface.GUI_playlist import db, add_entry
 
 class SongForm(QWidget):
     def __init__(self, main_window):
@@ -19,7 +21,7 @@ class SongForm(QWidget):
 
         # Database connection
         self.session_id = 'test'
-        self.db = GUI_playlist.db
+        self.db = user_interface.GUI_playlist.db
 
         # Buttons
         self.second_button = QPushButton('Add Song')
@@ -104,7 +106,7 @@ class SongForm(QWidget):
             self.add_song_to_db(song_entry, descriptors_dict)
             playlist = self.db['songs_' + self.session_id]
             song = playlist.find_one({"name": song_entry})
-            GUI_playlist.add_entry(song)
+            user_interface.GUI_playlist.add_entry(song)
 
             self.song_name.clear()
             self.song_artist.clear()
