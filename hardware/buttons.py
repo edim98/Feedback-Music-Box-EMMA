@@ -48,8 +48,8 @@ def set_up():
     """ Sets up the required pins and their response events.
         Call before any other methods in this module.
         ALWAYS CALL cleanup AFTER YOU'RE DONE!"""
-    stop_pin = 8 # BCM number of the input pin connected to the stop button
-    skip_pin = 10 # BCM number of the input pin connected to the skip button
+    stop_pin = 23 # BCM number of the input pin connected to the stop button
+    skip_pin = 24 # BCM number of the input pin connected to the skip button
     
     #GPIO.setwarnings(False) # Ignore warning for now
 
