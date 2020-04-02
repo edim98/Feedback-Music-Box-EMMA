@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (QWidget, QLabel, QPushButton, QLineEdit,
                              QFormLayout, QFileDialog, QErrorMessage,
                              QComboBox)
+from PyQt5.QtGui import QIcon
 
 import user_interface.GUI_playlist as GUI_playlist
 import audio.Tracklist as Tracklist
@@ -10,8 +11,10 @@ class SongForm(QWidget):
     def __init__(self, main_window):
         super(SongForm, self).__init__()
         self.setWindowTitle("Add a song")
+        self.setWindowIcon(QIcon("user_interface/emma_icon.png"))
         self.setMinimumWidth(300)
-        # Define parent and file selection dialog box
+
+        # Define file selection dialog box
         self.file_selection = QFileDialog
 
         # Database connection
@@ -55,8 +58,8 @@ class SongForm(QWidget):
         self.add_language()
 
         # Add Rows to Form
-        self.second_layout.addRow('Song Name', self.song_name)
         self.second_layout.addRow('Song Artist', self.song_artist)
+        self.second_layout.addRow('Song Name', self.song_name)
         self.second_layout.addRow('Genre', self.genre)
         self.second_layout.addRow('Dynamics', self.dynamics)
         self.second_layout.addRow('Tempo', self.tempo)
@@ -89,12 +92,12 @@ class SongForm(QWidget):
 
             # Get descriptors
             descriptors_dict = {
-                'genre': self.genre.currentText(),
-                'dynamics': self.dynamics.currentText(),
-                'tempo': self.tempo.currentText(),
-                'key': self.key.currentText(),
-                'lyrics': self.lyrics.currentText(),
-                'language': self.language.currentText()
+                'genre': self.genre.currentText().lower(),
+                'dynamics': self.dynamics.currentText().lower(),
+                'tempo': self.tempo.currentText().lower(),
+                'key': self.key.currentText().lower(),
+                'lyrics': self.lyrics.currentText().lower(),
+                'language': self.language.currentText().lower()
             }
 
             # Add the song to the database and to the GUI

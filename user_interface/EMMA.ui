@@ -36,7 +36,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>emma_icon.png</normaloff>emma_icon.png
+       <normaloff>emma_icon.png</normaloff>emma_icon.png
    </iconset>
   </property>
   <property name="autoFillBackground">
