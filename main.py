@@ -98,8 +98,6 @@ def main():
     args = CLIparser.parseFlags()
 
     db, sessionID = initialize()
-
-
     # Start the camera and the GUI.
     thread = threading.Thread(target=GUI.run)
     thread.setDaemon(True)

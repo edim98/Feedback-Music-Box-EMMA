@@ -17,8 +17,9 @@ def download_file(filename, link):
     yt = YouTube(link)
 
     # Only download if file is not found on storage.
-    if not os.path.isfile('\\mp4_tracks\\' + filename + '.mp4'):
-        yt.streams.filter(only_audio=True)[0].download(output_path='.\\mp4_tracks\\', filename=filename)
+    if not os.path.isfile('./mp4_tracks/' + filename + '.mp4'):
+        yt.streams.filter(only_audio=True)[0].download(output_path='./mp4_tracks/', filename=filename)
 
     # Convert video file to audio file.
-    ffmpeg.input('\\mp4_tracks\\' + filename + '.mp4').output('.\\audio\\tracks\\' + filename + '.mp3').run()
+    if not os.path.isfile('../audio/tracks/' + filename + '.mp3'):
+        ffmpeg.input('./mp4_tracks/' + filename + '.mp4').output('../audio/tracks/' + filename + '.mp3').run()
