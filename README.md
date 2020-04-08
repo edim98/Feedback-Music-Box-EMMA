@@ -4,6 +4,8 @@
 
 * Clone repository
 
+`sudo apt install git --upgrade`
+
 `git clone https://git.snt.utwente.nl/design-project-feedback-music-box/e.m.m.a..git`
 
 * Update and upgrade packages

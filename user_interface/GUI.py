@@ -4,7 +4,7 @@ import sys
 from cv2 import imwrite
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel, QToolTip
 
 import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist

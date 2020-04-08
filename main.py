@@ -76,6 +76,10 @@ def initialize():
     #TODO: raise IndexError('Cannot choose from an empty sequence') from None
     Playlist.song_player(db, sessionID, args.repeat)
 
+    if args.azure:
+        plotter.set_azure_flag()
+    plotter.init()
+
     return db, sessionID
 
 

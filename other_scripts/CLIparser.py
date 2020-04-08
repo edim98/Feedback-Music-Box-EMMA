@@ -1,5 +1,5 @@
 '''
-Module which handles the CLI interface.
+Module which handles the CLI.
 '''
 
 import argparse

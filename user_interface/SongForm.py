@@ -57,8 +57,8 @@ class SongForm(QWidget):
         self.add_language()
 
         # Add Rows to Form
-        self.second_layout.addRow('Song Name', self.song_name)
         self.second_layout.addRow('Song Artist', self.song_artist)
+        self.second_layout.addRow('Song Name', self.song_name)
         self.second_layout.addRow('Genre', self.genre)
         self.second_layout.addRow('Dynamics', self.dynamics)
         self.second_layout.addRow('Tempo', self.tempo)
@@ -91,12 +91,12 @@ class SongForm(QWidget):
 
             # Get descriptors
             descriptors_dict = {
-                'genre': self.genre.currentText(),
-                'dynamics': self.dynamics.currentText(),
+                'genre': self.genre.currentText().lower(),
+                'dynamics': self.dynamics.currentText().lower(),
                 'tempo': self.tempo.currentText(),
                 'key': self.key.currentText(),
                 'lyrics': self.lyrics.currentText(),
-                'language': self.language.currentText()
+                'language': self.language.currentText().lower()
             }
 
             # Add the song to the database and to the GUI
@@ -120,18 +120,18 @@ class SongForm(QWidget):
 
     # These are self explanatory
     def add_genre(self):
-        self.genre.addItem('rock')
-        self.genre.addItem('metal')
-        self.genre.addItem('electronic')
-        self.genre.addItem('r&b')
-        self.genre.addItem('pop')
-        self.genre.addItem('folk')
-        self.genre.addItem('latin')
-        self.genre.addItem('punk')
-        self.genre.addItem('jazz')
-        self.genre.addItem('blues')
-        self.genre.addItem('classical')
-        self.genre.addItem('country')
+        self.genre.addItem('Rock')
+        self.genre.addItem('Metal')
+        self.genre.addItem('Electronic')
+        self.genre.addItem('R&B')
+        self.genre.addItem('Pop')
+        self.genre.addItem('Folk')
+        self.genre.addItem('Latin')
+        self.genre.addItem('Punk')
+        self.genre.addItem('Jazz')
+        self.genre.addItem('Blues')
+        self.genre.addItem('Classical')
+        self.genre.addItem('Country')
 
     def add_dynamics(self):
         self.dynamics.addItem('low')
@@ -176,13 +176,13 @@ class SongForm(QWidget):
 
     def add_language(self):
         self.language.addItem('none')
-        self.language.addItem('romanian')
-        self.language.addItem('english')
-        self.language.addItem('dutch')
-        self.language.addItem('german')
-        self.language.addItem('portuguese')
-        self.language.addItem('lithuanian')
-        self.language.addItem('spanish')
-        self.language.addItem('french')
-        self.language.addItem('italian')
+        self.language.addItem('Romanian')
+        self.language.addItem('English')
+        self.language.addItem('Dutch')
+        self.language.addItem('German')
+        self.language.addItem('Portuguese')
+        self.language.addItem('Lithuanian')
+        self.language.addItem('Spanish')
+        self.language.addItem('French')
+        self.language.addItem('Italian')
         self.language.addItem('other')
