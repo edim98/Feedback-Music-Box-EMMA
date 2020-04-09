@@ -12,7 +12,7 @@ def create_progress_log(db, sessionID):
     :return: The Progress Collection object.
     """
 
-    collection_name = 'progress_collection_' + sessionID
+    collection_name = 'progress_history_' + sessionID
     progress_collection = db[collection_name]
     return progress_collection
 
@@ -25,7 +25,7 @@ def update_progress_log(db, sessionID, emotion_list):
     :return: Nothing.
     """
 
-    progress_collection = db['progress_collection_' + sessionID]
+    progress_collection = db['progress_history_' + sessionID]
 
     try:
         progress_collection.insert_one({
@@ -49,7 +49,7 @@ def delete_track_log(db, sessionID):
     :param sessionID: Current user's session ID.
     :return: Nothing.
     """
-    collection_name = 'progress_collection_' + sessionID
+    collection_name = 'progress_history_' + sessionID
     try:
         db[collection_name].drop()
     except:
@@ -65,7 +65,7 @@ def get_progress_log(db, sessionID, start = '', end = ''):
     :return: A list of entries in a given time frame.
     """
 
-    progress_collection = db['progress_collection_' + sessionID]
+    progress_collection = db['progress_history_' + sessionID]
 
     result = []
 
@@ -96,7 +96,7 @@ def get_progress_trend(db, sessionID, start = '', end = ''):
     :param end: (Optional) The end of the time frame.
     """
 
-    progress_collection = db['progress_collection_' + sessionID]
+    progress_collection = db['progress_history_' + sessionID]
 
     data = get_progress_log(db, sessionID, start = start, end = end)
     result = {

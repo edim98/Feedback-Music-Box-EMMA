@@ -12,7 +12,7 @@ def create_track_log(db, sessionID):
     :return: The Track History Collection object.
     """
 
-    collection_name = 'track_collection_' + sessionID
+    collection_name = 'track_history_' + sessionID
     track_collection = db[collection_name]
     return track_collection
 
@@ -25,7 +25,7 @@ def update_track_log(db, sessionID, trackID):
     :return: Nothing.
     """
 
-    track_collection = db['track_collection_' + sessionID]
+    track_collection = db['track_history_' + sessionID]
 
     try:
         track_collection.insert_one({
@@ -43,7 +43,7 @@ def delete_track_log(db, sessionID):
     :return: Nothing.
     """
 
-    collection_name = 'track_collection_' + sessionID
+    collection_name = 'track_history_' + sessionID
     try:
         db[collection_name].drop()
     except:
@@ -59,7 +59,7 @@ def get_track_info(db, sessionID, trackID):
     :return: Collection entry matching the query.
     """
 
-    track_collection = db['track_collection_' + sessionID]
+    track_collection = db['track_history_' + sessionID]
 
     try:
         query = track_collection.find_one({
@@ -80,7 +80,7 @@ def get_track_log(db, sessionID, start = '', end = ''):
     :return: A list of entries in a given time frame.
     """
 
-    track_collection = db['track_collection_' + sessionID]
+    track_collection = db['track_history_' + sessionID]
 
     result = []
 

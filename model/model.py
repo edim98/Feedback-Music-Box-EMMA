@@ -1,14 +1,16 @@
 # from fastai.vision import *
 
-# TODO: Incorporate this in the main module.
-# TODO: Change response to another format.
 
 import threading
+import configparser
 from time import sleep, time
 
 import cv2
 import requests
 
+config = configparser.ConfigParser()
+config.read('settings.cfg')
+ENDPOINT = config['RENDER']['RENDER_ENDPOINT']
 
 # Angry, happy, neutral, sad
 
@@ -90,7 +92,7 @@ def parseResults(emotionJson):
 
 def classify(learn, face_isolated):
     if face_isolated is None:
-        print("no face found")
+        print("No face was found!")
         return
 
     # seemed to be needed when converting to fastai image, don't think i need it for sending to Render
@@ -115,43 +117,9 @@ def send_to_server(byte_image):
     send_time = time()
 
     files = {'file': ('img.jpg', byte_image, 'image/jpeg', {'Expires': '0'})}
-    response = requests.post('https://fastai-model.onrender.com/analyze', files=files)
+    response = requests.post(ENDPOINT, files=files)
     jsonboi = response.json()
 
     receival_time = time()
-    # print('\n', jsonboi, '\n send_time:', send_time, '\n receival time:', receival_time)
-    print('Time taken for our own model: %f' % (receival_time - send_time))
+    # print('Time taken for our own model: %f' % (receival_time - send_time))
     return jsonboi
-
-
-if __name__ == "__main__":
-    # learn = initialize_fastai_model()
-    key = cv2. waitKey(1)
-    webcam = cv2.VideoCapture(0)
-    sleep(2)
-    i = 0
-    while True:
-        
-        try:
-            i += 1
-            check, frame = webcam.read()
-            key = cv2.waitKey(1)
-            if key == ord('q'):
-                webcam.release()
-                cv2.destroyAllWindows()
-                break
-
-            face_isolated = facechop(frame)
-
-            if i % 30 == 0:        
-                t = threading.Thread(target=classify, args=(None, face_isolated))
-                t.start()
-            
-        
-        except(KeyboardInterrupt):
-            print("Turning off camera.")
-            webcam.release()
-            print("Camera off.")
-            print("Program ended.")
-            cv2.destroyAllWindows()
-            break

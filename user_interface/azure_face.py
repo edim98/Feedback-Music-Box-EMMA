@@ -3,12 +3,18 @@ from msrest.authentication import CognitiveServicesCredentials
 
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 
+import configparser
+
+config = configparser.ConfigParser()
+config.read('settings.cfg')
+
 # This key will serve all examples in this document.
-KEY = "3108ba7dc2f84239b1b94961906167aa"
+# KEY = "3108ba7dc2f84239b1b94961906167aa"
+KEY = config['AZURE']['AZURE_KEY']
 
 # This endpoint will be used in all examples in this quickstart.
-ENDPOINT = "https://designprojectfacetest.cognitiveservices.azure.com"
-
+# ENDPOINT = "https://designprojectfacetest.cognitiveservices.azure.com"
+ENDPOINT = config['AZURE']['AZURE_ENDPOINT']
 
 face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 emotion_attribute = models.FaceAttributeType.emotion

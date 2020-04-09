@@ -13,6 +13,10 @@ row, column, scroll_layout, scroll_contents, dialog = 0, 0, None, None, None
 client = MongoClient()
 db = client.test_database
 
+#TODO: Change order in which name and artist are added in the playlist.
+#TODO: Add artist field in the database (maybe even remove artist field??)
+#TODO: Descriptors are added with capital first letter -> errors.
+#TODO: Add an import existing playlist option.
 
 def init(window):
     """
@@ -28,7 +32,7 @@ def init(window):
     add_song_btn = window.findChild(QPushButton, 'add_song_btn')
     add_song_btn.clicked.connect(add_new_song)
 
-    playlist = db.songs_test
+    playlist = db.tracks
     songs = playlist.find()
     for song in songs:
         add_entry(song)
@@ -106,7 +110,7 @@ def play_entry(label):
         user_interface.GUI.play_pause_btn.setText("Pause")
         user_interface.GUI.now_playing_text.show()
         user_interface.GUI.current_song_text.setText("{}".format(label.text()))
-        print("set text to : {}".format(label.text()))
+        # print("set text to : {}".format(label.text()))
         if not  user_interface.GUI.current_song_text.isVisible():
             user_interface.GUI.current_song_text.show()
     else:

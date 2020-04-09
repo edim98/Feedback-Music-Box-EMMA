@@ -234,7 +234,7 @@ def remove_frame(name="frame"):
             os.unlink(path_to_image)
             os.remove(path_to_image)
         else:
-            print("{}.png is apparently not a file".format(name))
+            print("{}.png is apparently not a file".format(name))  # TODO: remove this print?
     except FileNotFoundError:
         return  # We can just ignore this, won't make a difference in functionality. FIX: use images as bytes
         # instead of files.

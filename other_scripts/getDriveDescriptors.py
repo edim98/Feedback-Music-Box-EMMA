@@ -77,9 +77,8 @@ def main():
             }
             print('Downloading %s...' % row[0])
             if checkDataBaseFlag:
-                if get_song(db, sessionID, row[0]) is not None:
-                    continue
-            add_song(db, sessionID, row[0], descriptors)
+                if get_song(db, sessionID, row[0]) is None:
+                    add_song(db, sessionID, row[0], descriptors)
             download_file(row[0], row[7])
 
 

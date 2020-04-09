@@ -4,6 +4,9 @@ plt.style.use('dark_background')  # Responsible for making the plots in dark mod
 
 HISTORY_SIZE = 5  # Number of observations for mean calculation and progress plot
 
+azure_flag = False  # Let the plotter know if we are using Azure or our model in order to react to their
+# different outputs.
+
 COLORS = {  # Used for color coding the graphs
     'anger': '#dd3418',  # red
     'contempt': '#dd8518',  # orange
@@ -38,6 +41,35 @@ means_history = {  # Used in case we want to track the progress of the means
 }
 
 
+def init():
+    """
+    Currently adjusts the global dictionaries to smaller sizes, according to the output of our own model,
+    if azure_flag is set to True.
+    """
+    global COLORS, emotion_history, means_history, azure_flag
+    if not azure_flag:
+        COLORS = {
+            'anger': '#dd3418',  # red
+            'neutral': '#808080',  # gray
+            'happiness': '#f0f417',  # bright yellow
+            'sadness': '#5d7293'  # sad blue
+        }
+
+        emotion_history = {
+            'anger': [0.0],
+            'neutral': [0.0],
+            'happiness': [0.0],
+            'sadness': [0.0],
+        }
+
+        means_history = {
+            'anger': [],
+            'neutral': [],
+            'happiness': [],
+            'sadness': [],
+        }
+
+
 def write_plot(emotions_dict):
     """
     Creates two plots: one representing the live values of recognized emotions and another showing the progress of
@@ -50,6 +82,8 @@ def write_plot(emotions_dict):
     values = []
     for face_id in emotions_dict:
         for emotion, value in emotions_dict[face_id].items():
+            if emotion not in emotion_history.keys():
+                continue
             emotions.append(emotion)
             values.append(value)
             emotion_history[emotion].append(value)
@@ -103,13 +137,13 @@ def write_plot(emotions_dict):
     plt.tight_layout()
     plt.figure(live_fig.number)
     plt.grid(linewidth=0.2)
-    plt.text(3.5, 0.5, 'live observation', horizontalalignment='center', verticalalignment='center', alpha=0.05,
-             fontsize=50)
+    plt.text(len(emotion_history.keys())/2 - 0.5, 0.5, 'live observation', horizontalalignment='center',
+             verticalalignment='center', alpha=0.1, fontsize=50)
     plt.savefig("emotions_plot.png")
     plt.close(live_fig)
     plt.figure(prog_fig.number)
     plt.grid(linewidth=0.2)
-    plt.text(2, 0.5, 'progress', horizontalalignment='center', verticalalignment='center', alpha=0.05, fontsize=50)
+    plt.text(2, 0.5, 'progress', horizontalalignment='center', verticalalignment='center', alpha=0.1, fontsize=50)
     plt.savefig("progress_plot.png")
     plt.close(prog_fig)
 
@@ -170,3 +204,13 @@ def get_colors():
     :return: plotter.COLORS
     """
     return COLORS
+
+
+def set_azure_flag():
+    """
+    Sets the azure_flag global variable to True. Should be used at initialization.
+    """
+    global azure_flag
+    azure_flag = True
+
+

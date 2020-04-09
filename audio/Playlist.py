@@ -16,25 +16,65 @@ from audio import Tracklist
 
 media_list_player, playlist, db, sessionID = None, None, None, None
 repeatFlag = False
+testFlag = False
 
-def song_player(param_db, param_sessionID, repeat):
+encoding = {
+    '%20': ' ',
+    '%21': '!',
+    '%22': '\"',
+    '%23': '#',
+    '%24': '$',
+    '%25': '%',
+    '%26': '&',
+    '%27': '\'',
+    '%28': '(',
+    '%29': ')',
+    '%2A': '*',
+    '%2B': '+',
+    '%2C': ',',
+    '%2D': '-',
+    '%2E': '.',
+    '%2F': '/',  # NOT SUPPORTED IN FILE NAME!
+    '%3A': ':',  # NOT SUPPORTED IN FILE NAME!
+    '%3B': ';',
+    '%3C': '<',
+    '%3D': '=',
+    '%3E': '>',
+    '%3F': '?',
+    '%40': '@',
+    '%5B': '[',
+    '%5C': '\\',
+    '%5D': ']',
+    '%5E': '^',
+    '%5F': '_',
+    '%60': '`',
+    '%7B': '{',
+    '%7C': '|',
+    '%7D': '}',
+    '%7E': '~'
+}
+
+def song_player(param_db, param_sessionID, repeat, test):
     """
     Instantiate the media list player and its playlist.
     Playlist is created with one random song in it.
     :param param_db: The database object.
     :param param_sessionID: Current user's session ID.
+    :param repeat: Flag for repeating a song which was previously played. If set to False, it will skip previously played songs.
+    :param test: Flag for allowing console output. If set to False, it will not output messages to the console.
     """
 
-    global media_list_player, playlist, db, sessionID, repeatFlag
+    global media_list_player, playlist, db, sessionID, repeatFlag, testFlag
 
     db = param_db
     sessionID = param_sessionID
     repeatFlag = repeat
+    testFlag = test
 
     playlist = vlc.MediaList()
 
     # Add a random song to the playlist.
-    allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db, sessionID))]
+    allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db))]
     random_song = random.choice(allSongs)
     path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
     playlist.add_media(path)
@@ -68,7 +108,7 @@ def choose_next_song():
     global playlist, db, sessionID, repeatFlag
 
     queue = []
-    all_songs = Tracklist.get_all_songs(db, sessionID)
+    all_songs = Tracklist.get_all_songs(db)
     played_songs = [entry['trackID'] for entry in track_history.get_track_log(db, sessionID)]
 
     for song in all_songs:
@@ -79,8 +119,6 @@ def choose_next_song():
     if len(queue) == 0:
         print('Queue is empty!')
     queue.sort(key = lambda x: -x[1])
-
-    print(queue)
 
     add_to_playlist(queue[0][0])
 
@@ -93,15 +131,15 @@ def media_changed_call_back(event):
     :return: Nothing.
     """
 
-    global db, sessionID
+    global db, sessionID, testFlag
 
-    # print('cb: ', event.type, event.u)
     name = get_current_song()
-    song_descriptors = Tracklist.get_song(db, sessionID, name)['descriptors']
+    song_descriptors = Tracklist.get_song(db, name)['descriptors']
 
-    print('Now playing: ', name)
-    print('Described as: ', song_descriptors)
-    print('Song score: ', descriptors.get_song_score(song_descriptors))
+    if testFlag:
+        print('Now playing: ', name)
+        print('Described as: ', song_descriptors)
+        print('Song score: ', descriptors.get_song_score(song_descriptors))
 
     # Update the Track History Collection.
     track_history.update_track_log(db, sessionID, name)
@@ -159,10 +197,15 @@ def get_current_song():
     :return: The name of the song currently played.
     """
 
-    global media_list_player
+    global media_list_player, encoding
 
     name = media_list_player.get_media_player().get_media().get_mrl().split('/')[-1][:-4]
-    name = name.replace("%20", " ")
+
+    for key in encoding:
+        name = name.replace(key, encoding[key])
+    # name = name.replace()
+
+
     return name
 
 
@@ -175,7 +218,7 @@ def skip_song():
     global media_list_player, playlist
 
     current_song = get_current_song()
-    current_descriptors = Tracklist.get_song(db, sessionID, current_song)['descriptors']
+    current_descriptors = Tracklist.get_song(db, current_song)['descriptors']
     song_score = descriptors.get_song_score(current_descriptors)
 
     # Update the Aggregate Data Collection.
@@ -194,7 +237,7 @@ def remove_song(name):
 
     global playlist, db, sessionID
 
-    Tracklist.remove_song(db, sessionID, name)
+    Tracklist.remove_song(db, name)
     name = name.replace(" ", "%20")
     index = -1
     for song in playlist:
@@ -216,5 +259,5 @@ def play_song(label):
     name = label.text()
     path = os.path.relpath('./audio/tracks/' + name + '.mp3')
     playlist.add_media(path)
-
     media_list_player.play_item_at_index(len(playlist) - 1)
+    # media_list_player.next()
