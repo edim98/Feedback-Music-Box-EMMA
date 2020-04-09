@@ -42,7 +42,7 @@ def get_facial_emotion(frame, face_verification = None):
         else:
             emotions = azure.get_emotion(detected_faces)
     except FaceNotDetectedError:
-        print("get_facial_emotion: Face was not detected by Azure. Please adjust your positioning.")
+        print("Face was not detected by Azure. Please adjust your positioning.")
         emotions = {}
 
     return emotions
@@ -67,48 +67,52 @@ def initialize():
         sessionID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=15))
 
     track_history.create_track_log(db, sessionID)
-    print('Created track history...')
+    if args.test:
+        print('Created track history...')
 
     progress_history.create_progress_log(db, sessionID)
-    print('Created progress history...')
+    if args.test:
+        print('Created progress history...')
 
     aggdata.create_agg_log(db, sessionID)
-    print('Created aggregated data logs...')
+
+    if args.test:
+        print('Created aggregated data logs...')
 
     #TODO: raise IndexError('Cannot choose from an empty sequence') from None
-    Playlist.song_player(db, sessionID, args.repeat)
+    Playlist.song_player(db, sessionID, args.repeat, args.test)
 
     if args.azure:
         plotter.set_azure_flag()
     plotter.init()
 
-    if not os.path.isfile('settings.cfg'):
-        with open('settings.cfg', 'w') as cfg_file:
-            config = configparser.ConfigParser()
-            config['AZURE'] = {
-                'AZURE_KEY': '3108ba7dc2f84239b1b94961906167aa',
-                'AZURE_ENDPOINT': 'https://designprojectfacetest.cognitiveservices.azure.com'
-            }
-
-            config['RENDER'] = {
-                'RENDER_ENDPOINT': 'https://fastai-model.onrender.com/analyze'
-            }
-
-            config['MODEL_EMOTIONS'] = {
-                'HAPPINESS_MULTIPLIER': '1.0',
-                'NEUTRAL_MULTIPLIER': '0.1',
-                'ANGER_MULTIPLIER': '-2.0',
-                'SADNESS_MULTIPLIER': '-5.0'
-            }
-
-            config['AZURE_EMOTIONS'] = {
-                'SURPRISE_MULTIPLIER': '0.25',
-                'CONTEMPT_MULTIPLIER': '-5.0',
-                'DISGUST_MULTIPLIER': '-5.0',
-                'FEAR_MULTIPLIER': '-5.0'
-            }
-
-            config.write(cfg_file)
+    # if not os.path.isfile('settings.cfg'):
+    #     with open('settings.cfg', 'w') as cfg_file:
+    #         config = configparser.ConfigParser()
+    #         config['AZURE'] = {
+    #             'AZURE_KEY': '3108ba7dc2f84239b1b94961906167aa',
+    #             'AZURE_ENDPOINT': 'https://designprojectfacetest.cognitiveservices.azure.com'
+    #         }
+    #
+    #         config['RENDER'] = {
+    #             'RENDER_ENDPOINT': 'https://fastai-model.onrender.com/analyze'
+    #         }
+    #
+    #         config['MODEL_EMOTIONS'] = {
+    #             'HAPPINESS_MULTIPLIER': '1.0',
+    #             'NEUTRAL_MULTIPLIER': '0.1',
+    #             'ANGER_MULTIPLIER': '-2.0',
+    #             'SADNESS_MULTIPLIER': '-5.0'
+    #         }
+    #
+    #         config['AZURE_EMOTIONS'] = {
+    #             'SURPRISE_MULTIPLIER': '0.25',
+    #             'CONTEMPT_MULTIPLIER': '-5.0',
+    #             'DISGUST_MULTIPLIER': '-5.0',
+    #             'FEAR_MULTIPLIER': '-5.0'
+    #         }
+    #
+    #         config.write(cfg_file)
 
     return db, sessionID
 
@@ -136,7 +140,7 @@ def main():
     thread = threading.Thread(target=GUI.run)
     thread.setDaemon(True)
     vc = cv2.VideoCapture(0)
-    fv = FaceVerification(sessionID)
+    fv = FaceVerification(sessionID, args.test)
     GUI.setSomeVariables(vc, sessionID, fv)
     # vc.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     thread.start()
@@ -171,12 +175,13 @@ def main():
                 if Playlist.is_playing():
                     # Update global descriptors based on song descriptors and user emotions.
                     current_song = Playlist.get_current_song()
-                    current_descriptors = Tracklist.get_song(db, sessionID, current_song)['descriptors']
+                    current_descriptors = Tracklist.get_song(db, current_song)['descriptors']
                     emotion_list = getEmotionList(emotions)
                     descriptors.update_descriptors(emotion_list, current_descriptors)
                     progress_history.update_progress_log(db, sessionID, emotion_list)
                     current_song_score = descriptors.get_song_score(current_descriptors)
-                    print('Current song score: %s' % current_song_score)
+                    if args.test:
+                        print('Current song score: %s' % current_song_score)
 
                     # Change song if song score is low.
                     if current_song_score <= THRESHOLD:
@@ -191,7 +196,8 @@ def main():
                 GUI.refresh()
 
         if GUI.dead:
-            print("GUI is closed, shutting down...")
+            if args.test:
+                print("GUI is closed, shutting down...")
             break
 
     print("[EMMA]: Closing the camera...")

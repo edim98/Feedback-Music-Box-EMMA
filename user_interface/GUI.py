@@ -5,6 +5,7 @@ from cv2 import imwrite
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel, QToolTip
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel, QToolTip
 
 import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist
@@ -24,7 +25,7 @@ class EmmaWindow(QMainWindow):
     def closeEvent(self, event):
         global dead
         dead = True  # Set the dead signal to True. EMMA should shut down.
-        print("Closing the GUI by X")
+        # print("Closing the GUI by X")
         QMainWindow.closeEvent(self, event)
 
     # Maybe a refresh signal with QThread
@@ -39,7 +40,6 @@ def play_pause():
     """
     Called when the Play/Pause button is pressed. Starts/stops/resumes a song.
     """
-    print("play/pause")
     if not Playlist.is_playing():
         play_pause_btn.setText("Pause")
         Playlist.play()
@@ -57,7 +57,6 @@ def skip():
     """
     Called when the Skip button is pressed. Skips the song, according to the implementation of the media player.
     """
-    print("skip")
     Playlist.skip_song()
     current_song_text.setText("{}".format(Playlist.get_current_song()))
     play_pause_btn.setText("Pause")

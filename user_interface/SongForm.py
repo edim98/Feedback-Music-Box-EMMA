@@ -116,7 +116,7 @@ class SongForm(QWidget):
 
     # Adds a song to the database
     def add_song_to_db(self, name, descriptors):
-        Tracklist.add_song(self.db, self.session_id, name, descriptors)
+        Tracklist.add_song(self.db, name, descriptors)
 
     # These are self explanatory
     def add_genre(self):

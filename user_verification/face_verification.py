@@ -1,24 +1,30 @@
 import glob
 import os
+import configparser
 
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 
 
 class FaceVerification:
-    KEY = 'b9728001037d4e409030bd1ed1cc687f'
-    ENDPOINT = 'https://designprojectfacetest.cognitiveservices.azure.com/'
+
+    config = configparser.ConfigParser()
+    config.read('settings.cfg')
+
+    KEY = config['FACE_IDENTIFICATION']['FACE_IDENTIFICATION_KEY']
+    ENDPOINT = config['FACE_IDENTIFICATION']['FACE_IDENTIFICATION_ENDPOINT']
     face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
     isSetUp = False
 
-    def __init__(self, target_person_name):
+    def __init__(self, target_person_name, testFlag):
         if len(target_person_name) == 0:
             raise ValueError("Cannot supply person name of length 0 to the FaceVerification module")
 
         self.person_name = target_person_name
         self.target_face_id = self.get_target_face_id()
-        print("Initialized the FaceVerification module with name", self.person_name,
-              ", and face_id:", self.target_face_id)
+        self.testFlag = testFlag
+        # print("Initialized the FaceVerification module with name", self.person_name,
+        #       ", and face_id:", self.target_face_id)
 
     def set_target_face_id(self, face_id):
         self.target_face_id = face_id
@@ -35,7 +41,8 @@ class FaceVerification:
         img_files = glob.glob(path + "/*.png")
         if len(img_files) == 0:
             # raise Exception("You must first supply some example pictures of the patient in this session")
-            print('No images of target person were found...')
+            if self.testFlag:
+                print('No images of target person were found...')
             self.isSetUp = False
             return None
         else:
@@ -48,7 +55,7 @@ class FaceVerification:
                                                                       return_face_id=True,
                                                                       recognition_model='recognition_02')
             if len(detected_faces) != 1:
-                print(img_fn, " is rejected, because the number of detected face is not 1")
+                # print(img_fn, " is rejected, because the number of detected face is not 1")
                 continue
             else:
                 face_ids.append(detected_faces[0].face_id)
@@ -65,21 +72,22 @@ class FaceVerification:
         for face in detected_faces:
             current_face_id = face.face_id
             target_face_id = self.target_face_id
-            print('cur face: ', current_face_id)
-            print('target face: ', target_face_id)
+            # print('cur face: ', current_face_id)
+            # print('target face: ', target_face_id)
             verify_result = self.face_client.face.verify_face_to_face(current_face_id, target_face_id)
 
             if verify_result.is_identical:
-                print("Found the person we're looking for")
+                if self.testFlag:
+                    print("Found the person we're looking for")
                 return face, verify_result.confidence
             else:
-                print("Found a different person, skipping")
+                if self.testFlag:
+                    print("Found a different person, skipping")
                 continue
 
         return None, -1
 
     def getStatus(self):
-        print(self.isSetUp)
         return self.isSetUp
 
     def setStatus(self, status):

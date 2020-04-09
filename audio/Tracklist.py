@@ -2,32 +2,27 @@
 Module for accessing the contents of the Song Collection.
 """
 
-# TODO: Discuss if sessionID should be used here.
-# (Use a single collection for all sessions?)
-
-def create_song_collection(db, sessionID):
+def create_song_collection(db):
     """
     Instantiate the Song Collection.
     :param db: The database object.
-    :param sessionID: Current user's session ID.
     :return: The Song Collection object.
     """
 
-    collection_name = 'songs_' + sessionID
+    collection_name = 'tracks'
     song_collection = db[collection_name]
     return song_collection
 
-def add_song(db, sessionID, name, struct_descriptors):
+def add_song(db, name, struct_descriptors):
     """
     Add a new song in the Song Collection.
     :param db: The database object.
-    :param sessionID: Current user's session ID.
     :param name: The name of the song.
     :param struct_descriptors: The unique descriptors associated with this song.
     :return: Nothing.
     """
 
-    song_collection = db['songs_' + sessionID]
+    song_collection = db['tracks']
     try:
         song_collection.insert_one({
             'name': name,
@@ -36,16 +31,15 @@ def add_song(db, sessionID, name, struct_descriptors):
     except:
         print('Unable to update collection: songs!')
 
-def remove_song(db, sessionID, name):
+def remove_song(db, name):
     """
     Remove a song from the Song Collection.
     :param db: The database object.
-    :param sessionID: Current user's session ID.
     :param name: The name of the song.
     :return: Nothing.
     """
 
-    song_collection = db['songs_' + sessionID]
+    song_collection = db['tracks']
 
     try:
         song_collection.delete_one({
@@ -54,16 +48,15 @@ def remove_song(db, sessionID, name):
     except:
         print('Unable to delete from collection: songs!')
 
-def get_song(db, sessionID, name):
+def get_song(db, name):
     """
     Query the Collection for a given song.
     :param db: The database object.
-    :param sessionID: Current user's session ID.
     :param name: The name of the song.
     :return: Collection entry matching the query.
     """
 
-    song_collection = db['songs_' + sessionID]
+    song_collection = db['tracks']
 
     try:
         result = song_collection.find_one({
@@ -74,14 +67,13 @@ def get_song(db, sessionID, name):
 
     return result
 
-def get_all_songs(db, sessionID):
+def get_all_songs(db):
     """
     Retrieve all songs' information from the Songs Collection.
     :param db: The database object.
-    :param sessionID: Current user's session ID.
     """
 
-    song_collection = db['songs_' + sessionID]
+    song_collection = db['tracks']
 
     try:
         result = song_collection.find({

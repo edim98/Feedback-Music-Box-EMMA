@@ -16,6 +16,7 @@ from audio import Tracklist
 
 media_list_player, playlist, db, sessionID = None, None, None, None
 repeatFlag = False
+testFlag = False
 
 encoding = {
     '%20': ' ',
@@ -53,27 +54,30 @@ encoding = {
     '%7E': '~'
 }
 
-def song_player(param_db, param_sessionID, repeat):
+def song_player(param_db, param_sessionID, repeat, test):
     """
     Instantiate the media list player and its playlist.
     Playlist is created with one random song in it.
     :param param_db: The database object.
     :param param_sessionID: Current user's session ID.
+    :param repeat: Flag for repeating a song which was previously played. If set to False, it will skip previously played songs.
+    :param test: Flag for allowing console output. If set to False, it will not output messages to the console.
     """
 
-    global media_list_player, playlist, db, sessionID, repeatFlag
+    global media_list_player, playlist, db, sessionID, repeatFlag, testFlag
 
     db = param_db
     sessionID = param_sessionID
     repeatFlag = repeat
+    testFlag = test
 
     playlist = vlc.MediaList()
 
     # Add a random song to the playlist.
-    # allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db, sessionID))]
-    # random_song = random.choice(allSongs)
-    # path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
-    # playlist.add_media(path)
+    allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db))]
+    random_song = random.choice(allSongs)
+    path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
+    playlist.add_media(path)
 
     # Link playlist to media list player.
     media_list_player = vlc.MediaListPlayer()
@@ -104,7 +108,7 @@ def choose_next_song():
     global playlist, db, sessionID, repeatFlag
 
     queue = []
-    all_songs = Tracklist.get_all_songs(db, sessionID)
+    all_songs = Tracklist.get_all_songs(db)
     played_songs = [entry['trackID'] for entry in track_history.get_track_log(db, sessionID)]
 
     for song in all_songs:
@@ -115,8 +119,6 @@ def choose_next_song():
     if len(queue) == 0:
         print('Queue is empty!')
     queue.sort(key = lambda x: -x[1])
-
-    print(queue)
 
     add_to_playlist(queue[0][0])
 
@@ -129,15 +131,15 @@ def media_changed_call_back(event):
     :return: Nothing.
     """
 
-    global db, sessionID
+    global db, sessionID, testFlag
 
-    # print('cb: ', event.type, event.u)
     name = get_current_song()
-    song_descriptors = Tracklist.get_song(db, sessionID, name)['descriptors']
+    song_descriptors = Tracklist.get_song(db, name)['descriptors']
 
-    print('Now playing: ', name)
-    print('Described as: ', song_descriptors)
-    print('Song score: ', descriptors.get_song_score(song_descriptors))
+    if testFlag:
+        print('Now playing: ', name)
+        print('Described as: ', song_descriptors)
+        print('Song score: ', descriptors.get_song_score(song_descriptors))
 
     # Update the Track History Collection.
     track_history.update_track_log(db, sessionID, name)
@@ -216,7 +218,7 @@ def skip_song():
     global media_list_player, playlist
 
     current_song = get_current_song()
-    current_descriptors = Tracklist.get_song(db, sessionID, current_song)['descriptors']
+    current_descriptors = Tracklist.get_song(db, current_song)['descriptors']
     song_score = descriptors.get_song_score(current_descriptors)
 
     # Update the Aggregate Data Collection.
@@ -235,7 +237,7 @@ def remove_song(name):
 
     global playlist, db, sessionID
 
-    Tracklist.remove_song(db, sessionID, name)
+    Tracklist.remove_song(db, name)
     name = name.replace(" ", "%20")
     index = -1
     for song in playlist:
