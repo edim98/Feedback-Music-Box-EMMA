@@ -84,6 +84,7 @@ class SongForm(QWidget):
 
     # Adds the song from the form - should be used to also add to the database
     def add_song(self):
+        #  TODO: Make this look for the file in the audio/tracks to prevent adding non-existing media.
         # Check for song name
         if self.song_name.text() != '':
             # Check for artist
