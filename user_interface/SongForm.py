@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
                              QFormLayout, QFileDialog, QErrorMessage,
                              QComboBox)
@@ -24,9 +26,10 @@ class SongForm(QWidget):
         self.db = user_interface.GUI_playlist.db
 
         # Buttons
-        self.second_button = QPushButton('Add Song')
+        self.second_button = QPushButton('Add song')
+        self.second_button.focus = True
         self.second_button.clicked.connect(self.add_song)
-        self.choose_file_button = QPushButton('Choose Song')
+        self.choose_file_button = QPushButton('Pick file')
         self.choose_file_button.clicked.connect(self.get_song_name)
 
         # Form entries
@@ -59,6 +62,11 @@ class SongForm(QWidget):
         self.language = QComboBox()
         self.add_language()
 
+        # Error popup
+        self.error_window = QErrorMessage()
+        self.error_window.setWindowTitle('There was a problem...')
+        self.error_window.setWindowIcon(QIcon('user_interface/emma_icon.png'))
+
         # Add Rows to Form
         self.second_layout.addRow('Song Artist', self.song_artist)
         self.second_layout.addRow('Song Name', self.song_name)
@@ -80,7 +88,8 @@ class SongForm(QWidget):
         name = self.file_selection.getOpenFileName()
         song = name[0].split('/')
         song = song[len(song) - 1].replace('.mp3', '')
-        self.song_name.setText(song)
+        self.song_artist.setText(song.split(' - ')[0])
+        self.song_name.setText(song.split(' - ')[1])
 
     # Adds the song from the form - should be used to also add to the database
     def add_song(self):
@@ -89,17 +98,28 @@ class SongForm(QWidget):
         if self.song_name.text() != '':
             # Check for artist
             if self.song_artist.text() != '':
-                song_entry = self.song_name.text() + " - " + self.song_artist.text()
+                song_entry = self.song_artist.text() + " - " + self.song_name.text()
             else:
                 song_entry = self.song_name.text()
+
+            song_in_folder = False
+            for file in os.listdir("./audio/tracks"):
+                if song_entry + '.mp3' == file:
+                    song_in_folder = True
+                    break
+
+            if not song_in_folder:
+                self.error_window.showMessage('Song file not found in audio/tracks!')
+                self.error_window.exec_()
+                return
 
             # Get descriptors
             descriptors_dict = {
                 'genre': self.genre.currentText().lower(),
                 'dynamics': self.dynamics.currentText().lower(),
-                'tempo': self.tempo.currentText().lower(),
-                'key': self.key.currentText().lower(),
-                'lyrics': self.lyrics.currentText().lower(),
+                'tempo': self.tempo.currentText(),
+                'key': self.key.currentText(),
+                'lyrics': self.lyrics.currentText(),
                 'language': self.language.currentText().lower()
             }
 
@@ -113,14 +133,12 @@ class SongForm(QWidget):
             self.song_artist.clear()
             self.close()
         else:
-            # Error in case there is no name for the song
-            error_dialog = QErrorMessage()
-            error_dialog.showMessage('Song name needed!')
-            error_dialog.exec_()
+            self.error_window.showMessage('Song name needed!')
+            self.error_window.exec_()
 
     # Adds a song to the database
     def add_song_to_db(self, name, descriptors):
-        Tracklist.add_song(self.db, self.session_id, name, descriptors)
+        Tracklist.add_song(self.db, name, descriptors)
 
     # These are self explanatory
     def add_genre(self):

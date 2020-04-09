@@ -16,7 +16,7 @@ from app import progress_history, track_history, aggdata, descriptors
 from audio import Tracklist, Playlist
 from model.model import facechop, classify
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
-from user_interface.face_utils import get_frame, remove_frame, close_camera
+from user_interface.face_utils import get_frame, remove_frame, close_camera, draw_face_boxes
 
 THRESHOLD = -10
 args = None
@@ -155,6 +155,8 @@ def main():
         end_time = time.time()
 
         if end_time - start_time < 3.1:
+            cv2.imwrite('frame.png', frame)
+            GUI.refresh_frame()
             continue
 
         start_time = time.time()
@@ -189,6 +191,9 @@ def main():
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
+                remove_frame()
+                draw_face_boxes(frame)  # Draw box around the face.
+                cv2.imwrite("frame.png", frame)
                 if args.azure:
                     plotter.write_plot(emotions)
                 else:
