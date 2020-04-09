@@ -2,8 +2,11 @@
 Module for storing song descriptor scores and for computing song scores.
 """
 
+import configparser
+import os
+
 struct_descriptors = {
-    
+
     'genre': {
         'rock': 0,
         'pop': 0,
@@ -80,7 +83,7 @@ struct_descriptors = {
         'spanish': 0,
         'french': 0,
         'italian': 0,
-        'portugese': 0,
+        'portugese': 0, # TODO: change this to portuguese
         'other': 0
     }
 }
@@ -88,14 +91,19 @@ struct_descriptors = {
 '''
 Multiplier parameters for determining individual song scores.
 '''
-happinessMultiplier = 1.0
-neutralMultiplier = 0.1
-surpriseMultiplier = 0.25
-angerMultiplier = -2.0
-disgustMultiplier = -5.0
-fearMultiplier = -5.0
-sadnessMultiplier = -5.0
-contemptMultiplier = -5.0
+
+config = configparser.ConfigParser()
+config.read(os.path.relpath('settings.cfg'))
+
+happinessMultiplier = config['BASE_EMOTIONS']['HAPPINESS_MULTIPLIER']
+neutralMultiplier = config['BASE_EMOTIONS']['NEUTRAL_MULTIPLIER']
+angerMultiplier = config['BASE_EMOTIONS']['ANGER_MULTIPLIER']
+sadnessMultiplier = config['BASE_EMOTIONS']['SADNESS_MULTIPLIER']
+
+surpriseMultiplier = config['EXTRA_EMOTIONS']['SURPRISE_MULTIPLIER']
+disgustMultiplier = config['EXTRA_EMOTIONS']['DISGUST_MULTIPLIER']
+fearMultiplier = config['EXTRA_EMOTIONS']['FEAR_MULTIPLIER']
+contemptMultiplier = config['EXTRA_EMOTIONS']['CONTEMPT_MULTIPLIER']
 
 
 def get_descriptors():
@@ -131,7 +139,7 @@ def update_descriptors(emotion_list, song_descriptors): # TODO Tinker with param
     global struct_descriptors
 
     for descriptor in song_descriptors:
-            struct_descriptors[descriptor][song_descriptors[descriptor]] += (emotion_list['happiness'] +  0.1 * emotion_list['neutral'] + 0.25* emotion_list['surprise'])
-            struct_descriptors[descriptor][song_descriptors[descriptor]] -= (2 * emotion_list['anger'] + 5 * emotion_list['disgust'] + 5 * emotion_list['fear'] + 5 * emotion_list['sadness'] + 5 * emotion_list['contempt'])
+            struct_descriptors[descriptor][song_descriptors[descriptor]] += (emotion_list['happiness'] * happinessMultiplier + emotion_list['neutral'] * neutralMultiplier + emotion_list['surprise'] * surpriseMultiplier)
+            struct_descriptors[descriptor][song_descriptors[descriptor]] += (emotion_list['anger'] * angerMultiplier + emotion_list['disgust'] * disgustMultiplier + emotion_list['fear'] * fearMultiplier + emotion_list['sadness'] * sadnessMultiplier + emotion_list['contempt'] * contemptMultiplier)
 
     return struct_descriptors

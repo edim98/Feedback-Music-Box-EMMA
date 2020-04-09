@@ -1,5 +1,7 @@
 import threading
 import time
+import os
+import configparser
 
 import cv2
 from pymongo import MongoClient
@@ -12,7 +14,7 @@ import user_interface.azure_face as azure
 import user_interface.plotter as plotter
 from app import progress_history, track_history, aggdata, descriptors
 from audio import Tracklist, Playlist
-from model.fast_and_cam import facechop, classify
+from model.model import facechop, classify
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 from user_interface.face_utils import get_frame, remove_frame, close_camera
 
@@ -79,6 +81,34 @@ def initialize():
     if args.azure:
         plotter.set_azure_flag()
     plotter.init()
+
+    if not os.path.isfile('settings.cfg'):
+        with open('settings.cfg', 'w') as cfg_file:
+            config = configparser.ConfigParser()
+            config['AZURE'] = {
+                'AZURE_KEY': '3108ba7dc2f84239b1b94961906167aa',
+                'AZURE_ENDPOINT': 'https://designprojectfacetest.cognitiveservices.azure.com'
+            }
+
+            config['RENDER'] = {
+                'RENDER_ENDPOINT': 'https://fastai-model.onrender.com/analyze'
+            }
+
+            config['MODEL_EMOTIONS'] = {
+                'HAPPINESS_MULTIPLIER': '1.0',
+                'NEUTRAL_MULTIPLIER': '0.1',
+                'ANGER_MULTIPLIER': '-2.0',
+                'SADNESS_MULTIPLIER': '-5.0'
+            }
+
+            config['AZURE_EMOTIONS'] = {
+                'SURPRISE_MULTIPLIER': '0.25',
+                'CONTEMPT_MULTIPLIER': '-5.0',
+                'DISGUST_MULTIPLIER': '-5.0',
+                'FEAR_MULTIPLIER': '-5.0'
+            }
+
+            config.write(cfg_file)
 
     return db, sessionID
 

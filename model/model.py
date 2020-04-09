@@ -2,11 +2,15 @@
 
 
 import threading
+import configparser
 from time import sleep, time
 
 import cv2
 import requests
 
+config = configparser.ConfigParser()
+config.read('settings.cfg')
+ENDPOINT = config['RENDER']['RENDER_ENDPOINT']
 
 # Angry, happy, neutral, sad
 
@@ -113,7 +117,7 @@ def send_to_server(byte_image):
     send_time = time()
 
     files = {'file': ('img.jpg', byte_image, 'image/jpeg', {'Expires': '0'})}
-    response = requests.post('https://fastai-model.onrender.com/analyze', files=files)
+    response = requests.post(ENDPOINT, files=files)
     jsonboi = response.json()
 
     receival_time = time()
