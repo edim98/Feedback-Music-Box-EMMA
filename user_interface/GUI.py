@@ -111,6 +111,7 @@ def refresh_frame():
     """
     Called to refresh and display only the camera feed image.
     """
+    print(check_volume())
     camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))
     camera_img.show()
 
