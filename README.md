@@ -86,9 +86,9 @@ Install the python packages for 32-bit systems:
 
 `pip3 install adafruit-mcp3xxx`
 
-    `cd /tmp
+    cd /tmp
     wget https://project-downloads.drogon.net/wiringpi-latest.deb
-    sudo dpkg -i wiringpi-latest.deb`
+    sudo dpkg -i wiringpi-latest.deb
 
 * Raspberry Pi Configurations
 
