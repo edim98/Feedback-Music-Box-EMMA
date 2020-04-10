@@ -8,18 +8,20 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 
 spi, cs, mcp, chan0 = None, None, None, None
-# play_pause, skip = None, None
+play_pause, skip = None, None
 
 # Stop the system/music
 def play_button(channel):
+    global play_pause
     # print("Stop Button was pushed!")
-    # play_pause()
+    play_pause()
 
 # Skip the current song
 def skip_button(channel):
+    global skip
     # print("Skip Button was pushed!")
     # set_volume(check_volume())
-    # skip()
+    skip()
 
 # Remap a value from one range to another
 def remap_range(value, left_min, left_max, right_min, right_max):
@@ -54,17 +56,20 @@ def volume_button(channel):
 
 def buttons_initialize(play_pause_func, skip_func):
 
-    global spi, cs, mcp, chan0
+    global spi, cs, mcp, chan0, play_pause, skip
+
+    play_pause = play_pause_func
+    skip = skip_func
 
     # print(GPIO.getmode())
     GPIO.setwarnings(False) # Ignore warning for now
     #GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
 
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
-    GPIO.add_event_detect(23,GPIO.RISING,callback=play_pause_func) # Setup event on pin 10 rising edge
+    GPIO.add_event_detect(23,GPIO.RISING,callback=play_button) # Setup event on pin 10 rising edge
 
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
-    GPIO.add_event_detect(24,GPIO.RISING,callback=skip_func) # Setup event on pin 10 rising edge
+    GPIO.add_event_detect(24,GPIO.RISING,callback=skip_button) # Setup event on pin 10 rising edge
 
 
     # Add event listener for volume knob.
