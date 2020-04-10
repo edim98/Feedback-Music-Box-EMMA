@@ -6,7 +6,9 @@ import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
-from user_interface.GUI import play_pause, skip
+# from user_interface.GUI import play_pause, skip
+import user_interface.GUI.play_pause as play_pause
+import user_interface.GUI.skip as skip
 
 spi, cs, mcp, chan0 = None, None, None, None
 

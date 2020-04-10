@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLa
 import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist
 from user_interface.face_utils import get_frame
-from hardware.buttons import check_volume
+# from hardware.buttons import check_volume
+import hardware.buttons.check_volume as check_volume
 
 CAMERA_IMG_PATH = "frame.png"
 LIVE_IMG_PATH = "emotions_plot.png"
