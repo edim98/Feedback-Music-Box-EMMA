@@ -8,7 +8,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 
 spi, cs, mcp, chan0 = None, None, None, None
-play_pause, skip = None, None
+play_pause, skip, volume = None, None, None
 
 def cleanup():
     GPIO.cleanup()
@@ -55,14 +55,16 @@ def set_volume(vol):
     os.system(set_vol_cmd)
 
 def volume_button(channel):
-    check_volume()
+    global volume
+    volume()
 
-def buttons_initialize(play_pause_func, skip_func):
+def buttons_initialize(play_pause_func, skip_func, volume_func):
 
-    global spi, cs, mcp, chan0, play_pause, skip
+    global spi, cs, mcp, chan0, play_pause, skip, volume
 
     play_pause = play_pause_func
     skip = skip_func
+    volume = volume_func
 
     # print(GPIO.getmode())
     GPIO.setwarnings(False) # Ignore warning for now
@@ -76,8 +78,8 @@ def buttons_initialize(play_pause_func, skip_func):
 
 
     # Add event listener for volume knob.
-    # GPIO.setup(9, GPIO.IN)
-    # GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
+    GPIO.setup(9, GPIO.IN)
+    GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
     # GPIO.add_event_detect(9, GPIO.FALLING, callback=volume_button)
 
     # create the spi bus
