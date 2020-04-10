@@ -49,6 +49,9 @@ def set_volume(vol):
     .format(volume = vol)
     os.system(set_vol_cmd)
 
+def volume_button():
+    check_volume()
+
 def buttons_initialize():
 
     global spi, cs, mcp, chan0
@@ -62,6 +65,11 @@ def buttons_initialize():
 
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
     GPIO.add_event_detect(24,GPIO.RISING,callback=skip_button) # Setup event on pin 10 rising edge
+
+
+    # Add event listener for volume knob.
+    GPIO.setup(9, GPIO.RISING, callback=volume_button)
+    GPIO.setup(9, GPIO.FALLING, callback=volume_button)
 
     # create the spi bus
     spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
