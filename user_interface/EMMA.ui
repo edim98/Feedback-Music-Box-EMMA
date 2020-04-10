@@ -36,7 +36,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>emma_icon.png</normaloff>emma_icon.png
+       <normaloff>emma_icon.png</normaloff>emma_icon.png
    </iconset>
   </property>
   <property name="autoFillBackground">
@@ -245,17 +245,23 @@
      <number>1</number>
     </property>
     <widget class="QPushButton" name="pause_EMMA_btn">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>50</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Pause EMMA</string>
-     </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>60</y>
+                <width>100</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Pause EMMA</string>
+        </property>
+        <property name="default">
+            <bool>false</bool>
+        </property>
+        <property name="flat">
+            <bool>false</bool>
+        </property>
     </widget>
     <widget class="QPushButton" name="register_user_btn">
      <property name="geometry">
