@@ -55,8 +55,8 @@ class SongForm(QWidget):
 
         # Lyrics
         self.lyrics = QComboBox()
-        self.lyrics.addItem('yes')
         self.lyrics.addItem('no')
+        self.lyrics.addItem('yes')
 
         # Language
         self.language = QComboBox()
@@ -117,7 +117,7 @@ class SongForm(QWidget):
             descriptors_dict = {
                 'genre': self.genre.currentText().lower(),
                 'dynamics': self.dynamics.currentText().lower(),
-                'tempo': self.tempo.currentText(),
+                'tempo': self.tempo.currentText().replace(' ', ''),
                 'key': self.key.currentText(),
                 'lyrics': self.lyrics.currentText(),
                 'language': self.language.currentText().lower()
@@ -125,7 +125,7 @@ class SongForm(QWidget):
 
             # Add the song to the database and to the GUI
             self.add_song_to_db(song_entry, descriptors_dict)
-            playlist = self.db['songs_' + self.session_id]
+            playlist = self.db['tracks']
             song = playlist.find_one({"name": song_entry})
             user_interface.GUI_playlist.add_entry(song)
 
