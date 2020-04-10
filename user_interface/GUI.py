@@ -115,6 +115,7 @@ def refresh_frame():
     """
     Called to refresh and display only the camera feed image.
     """
+    set_volume()
     camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))
     camera_img.show()
 
@@ -177,7 +178,7 @@ def init():
     current_song_text.hide()
     now_playing_text.hide()
 
-    buttons_initialize(play_pause, skip, set_volume)
+    buttons_initialize(play_pause, skip)
 
     window.show()
 
