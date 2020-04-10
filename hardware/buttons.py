@@ -8,7 +8,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 
 spi, cs, mcp, chan0 = None, None, None, None
-play_pause, skip, volume = None, None, None
+play_pause, skip, = None, None
 
 def cleanup():
     GPIO.cleanup()
@@ -54,17 +54,12 @@ def set_volume(vol):
     .format(volume = vol)
     os.system(set_vol_cmd)
 
-def volume_button(channel):
-    global volume
-    volume()
-
-def buttons_initialize(play_pause_func, skip_func, volume_func):
+def buttons_initialize(play_pause_func, skip_func):
 
     global spi, cs, mcp, chan0, play_pause, skip, volume
 
     play_pause = play_pause_func
     skip = skip_func
-    volume = volume_func
 
     # print(GPIO.getmode())
     GPIO.setwarnings(False) # Ignore warning for now
@@ -76,7 +71,6 @@ def buttons_initialize(play_pause_func, skip_func, volume_func):
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
     GPIO.add_event_detect(24,GPIO.RISING,callback=skip_button) # Setup event on pin 10 rising edge
 
-    # GPIO.add_event_detect(9, GPIO.FALLING, callback=volume_button)
 
     # create the spi bus
     spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -90,9 +84,6 @@ def buttons_initialize(play_pause_func, skip_func, volume_func):
     # create an analog input channel on pin 0
     chan0 = AnalogIn(mcp, MCP.P0)
 
-    # Add event listener for volume knob.
-    GPIO.setup(9, GPIO.IN)
-    GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
 
 def exit_button():
     GPIO.cleanup() # Clean up
