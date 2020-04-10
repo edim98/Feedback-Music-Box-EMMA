@@ -76,10 +76,6 @@ def buttons_initialize(play_pause_func, skip_func, volume_func):
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
     GPIO.add_event_detect(24,GPIO.RISING,callback=skip_button) # Setup event on pin 10 rising edge
 
-
-    # Add event listener for volume knob.
-    GPIO.setup(9, GPIO.IN)
-    GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
     # GPIO.add_event_detect(9, GPIO.FALLING, callback=volume_button)
 
     # create the spi bus
@@ -93,6 +89,10 @@ def buttons_initialize(play_pause_func, skip_func, volume_func):
 
     # create an analog input channel on pin 0
     chan0 = AnalogIn(mcp, MCP.P0)
+
+    # Add event listener for volume knob.
+    GPIO.setup(9, GPIO.IN)
+    GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
 
 def exit_button():
     GPIO.cleanup() # Clean up
