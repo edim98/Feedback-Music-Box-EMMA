@@ -77,3 +77,22 @@ Install the python packages for 32-bit systems:
 * Install Microsoft Azure Cognitive Services
 
 `sudo pip3 install --upgrade azure-cognitiveservices-vision-face`
+
+* Install hardware dependencies
+
+`pip3 install RPI.GPIO` (comes by default with the Raspberry Pi)
+
+`pip3 install adafruit-blinka`
+
+`pip3 install adafruit-mcp3xxx`
+
+    cd /tmp
+    wget https://project-downloads.drogon.net/wiringpi-latest.deb
+    sudo dpkg -i wiringpi-latest.deb
+
+* Raspberry Pi Configurations
+
+Enable SPI from Raspberry Pi Configuration > Interfaces.
+
+Make sure that the Audio output of the Rapsberry Pi is set to the speakers
+(by using `sudo raspi-config`). The default choice is HDMI.
