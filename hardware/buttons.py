@@ -42,11 +42,13 @@ def remap_range(value, left_min, left_max, right_min, right_max):
 # Check the current desired volume, as read from the potentiometer
 def check_volume():
     global chan0
-    # convert 16bit adc0 (0-65535) trim pot read into 0-100 volume level
-    trim_pot = chan0.value
-    set_volume = remap_range(trim_pot, 0, 65535, 0, 100)
-    print('Volume = {volume}%' .format(volume = set_volume))
-    return set_volume
+
+    if chan0:
+        # convert 16bit adc0 (0-65535) trim pot read into 0-100 volume level
+        trim_pot = chan0.value
+        set_volume = remap_range(trim_pot, 0, 65535, 0, 100)
+        print('Volume = {volume}%' .format(volume = set_volume))
+        return set_volume
 
 # Set the system volume to the given value
 def set_volume(vol):
