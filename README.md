@@ -85,3 +85,5 @@ Install the python packages for 32-bit systems:
 `pip3 install adafruit-blinka`
 
 `pip3 install adafruit-mcp3xxx`
+
+Also make sure that SPI is enabled, by going to Raspberry Pi Configuration > Interfaces.
