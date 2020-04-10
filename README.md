@@ -77,3 +77,11 @@ Install the python packages for 32-bit systems:
 * Install Microsoft Azure Cognitive Services
 
 `sudo pip3 install --upgrade azure-cognitiveservices-vision-face`
+
+* Install hardware dependencies
+
+`pip3 install RPI.GPIO` (comes by default with the Raspberry Pi)
+
+`pip3 install adafruit-blinka`
+
+`pip3 install adafruit-mcp3xxx`
