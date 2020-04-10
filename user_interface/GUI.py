@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLa
 import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist
 from user_interface.face_utils import get_frame
+from hardware.buttons import check_volume
 
 CAMERA_IMG_PATH = "frame.png"
 LIVE_IMG_PATH = "emotions_plot.png"
@@ -118,6 +119,8 @@ def refresh():
     Called when new images are to be displayed on the screen (i.e. new reaction from the user). Sets a new pixmap
     component for each of the image object on the screen. Finally, repaints the whole window.
     """
+
+    print(check_volume())
 
     #  The later two parameters of scaled() are for keeping the aspect ratio and smoothing the result of scaling
     camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))

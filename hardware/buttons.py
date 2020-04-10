@@ -49,7 +49,7 @@ def set_volume(vol):
     .format(volume = vol)
     os.system(set_vol_cmd)
 
-def volume_button():
+def volume_button(channel):
     check_volume()
 
 def buttons_initialize():
@@ -68,6 +68,7 @@ def buttons_initialize():
 
 
     # Add event listener for volume knob.
+    GPIO.setup(9, GPIO.IN)
     GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
     GPIO.add_event_detect(9, GPIO.FALLING, callback=volume_button)
 
