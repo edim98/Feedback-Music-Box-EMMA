@@ -1,6 +1,9 @@
+import os
+
 from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
                              QFormLayout, QFileDialog, QErrorMessage,
                              QComboBox)
+from PyQt5.QtGui import QIcon
 
 import audio.Tracklist as Tracklist
 import user_interface.GUI_playlist
@@ -12,8 +15,10 @@ class SongForm(QWidget):
     def __init__(self, main_window):
         super(SongForm, self).__init__()
         self.setWindowTitle("Add a song")
+        self.setWindowIcon(QIcon("user_interface/emma_icon.png"))
         self.setMinimumWidth(300)
-        # Define parent and file selection dialog box
+
+        # Define file selection dialog box
         self.file_selection = QFileDialog
 
         # Database connection
@@ -21,9 +26,10 @@ class SongForm(QWidget):
         self.db = user_interface.GUI_playlist.db
 
         # Buttons
-        self.second_button = QPushButton('Add Song')
+        self.second_button = QPushButton('Add song')
+        self.second_button.focus = True
         self.second_button.clicked.connect(self.add_song)
-        self.choose_file_button = QPushButton('Choose Song')
+        self.choose_file_button = QPushButton('Pick file')
         self.choose_file_button.clicked.connect(self.get_song_name)
 
         # Form entries
@@ -56,6 +62,11 @@ class SongForm(QWidget):
         self.language = QComboBox()
         self.add_language()
 
+        # Error popup
+        self.error_window = QErrorMessage()
+        self.error_window.setWindowTitle('There was a problem...')
+        self.error_window.setWindowIcon(QIcon('user_interface/emma_icon.png'))
+
         # Add Rows to Form
         self.second_layout.addRow('Song Artist', self.song_artist)
         self.second_layout.addRow('Song Name', self.song_name)
@@ -77,17 +88,30 @@ class SongForm(QWidget):
         name = self.file_selection.getOpenFileName()
         song = name[0].split('/')
         song = song[len(song) - 1].replace('.mp3', '')
-        self.song_name.setText(song)
+        self.song_artist.setText(song.split(' - ')[0])
+        self.song_name.setText(song.split(' - ')[1])
 
     # Adds the song from the form - should be used to also add to the database
     def add_song(self):
+        #  TODO: Make this look for the file in the audio/tracks to prevent adding non-existing media.
         # Check for song name
         if self.song_name.text() != '':
             # Check for artist
             if self.song_artist.text() != '':
-                song_entry = self.song_name.text() + " - " + self.song_artist.text()
+                song_entry = self.song_artist.text() + " - " + self.song_name.text()
             else:
                 song_entry = self.song_name.text()
+
+            song_in_folder = False
+            for file in os.listdir("./audio/tracks"):
+                if song_entry + '.mp3' == file:
+                    song_in_folder = True
+                    break
+
+            if not song_in_folder:
+                self.error_window.showMessage('Song file not found in audio/tracks!')
+                self.error_window.exec_()
+                return
 
             # Get descriptors
             descriptors_dict = {
@@ -109,10 +133,8 @@ class SongForm(QWidget):
             self.song_artist.clear()
             self.close()
         else:
-            # Error in case there is no name for the song
-            error_dialog = QErrorMessage()
-            error_dialog.showMessage('Song name needed!')
-            error_dialog.exec_()
+            self.error_window.showMessage('Song name needed!')
+            self.error_window.exec_()
 
     # Adds a song to the database
     def add_song_to_db(self, name, descriptors):
@@ -134,18 +156,18 @@ class SongForm(QWidget):
         self.genre.addItem('Country')
 
     def add_dynamics(self):
-        self.dynamics.addItem('low')
-        self.dynamics.addItem('medium')
-        self.dynamics.addItem('high')
+        self.dynamics.addItem('Low')
+        self.dynamics.addItem('Medium')
+        self.dynamics.addItem('High')
 
     def add_tempo(self):
-        self.tempo.addItem('<30')
-        self.tempo.addItem('40-60')
-        self.tempo.addItem('60-66')
-        self.tempo.addItem('66-76')
-        self.tempo.addItem('76-108')
-        self.tempo.addItem('108-120')
-        self.tempo.addItem('120-168')
+        self.tempo.addItem('< 30')
+        self.tempo.addItem('40 - 60')
+        self.tempo.addItem('60 - 66')
+        self.tempo.addItem('66 - 76')
+        self.tempo.addItem('76 - 108')
+        self.tempo.addItem('108 - 120')
+        self.tempo.addItem('120 - 168')
         self.tempo.addItem('200+')
 
     def add_key(self):
@@ -175,7 +197,7 @@ class SongForm(QWidget):
         self.key.addItem('G minor')
 
     def add_language(self):
-        self.language.addItem('none')
+        self.language.addItem('None')
         self.language.addItem('Romanian')
         self.language.addItem('English')
         self.language.addItem('Dutch')
@@ -185,4 +207,4 @@ class SongForm(QWidget):
         self.language.addItem('Spanish')
         self.language.addItem('French')
         self.language.addItem('Italian')
-        self.language.addItem('other')
+        self.language.addItem('Other')

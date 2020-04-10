@@ -3,20 +3,20 @@ import sys
 
 from cv2 import imwrite
 from PyQt5 import uic
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel, QToolTip
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel, QToolTip
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSlider, QLabel, QErrorMessage
 
 import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist
 from user_interface.face_utils import get_frame
 
-CAMERA_IMG_PATH = "frame.png"  # Might require os.path.join(sys.path[0], "emotions_plot.png")
+CAMERA_IMG_PATH = "frame.png"
 LIVE_IMG_PATH = "emotions_plot.png"
 PROG_IMG_PATH = "progress_plot.png"
 
 app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, camera_img, live_img, prog_img, current_song_text, now_playing_text = None, None, None, None, None, None, None, None, None, None, None, None, None, None, None
-webcam, sessionID, faceverification = None, None, None
+webcam, sessionID, faceverification, register_window = None, None, None, None
+
 
 class EmmaWindow(QMainWindow):
     def __init__(self):
@@ -25,16 +25,15 @@ class EmmaWindow(QMainWindow):
     def closeEvent(self, event):
         global dead
         dead = True  # Set the dead signal to True. EMMA should shut down.
-        # print("Closing the GUI by X")
         QMainWindow.closeEvent(self, event)
 
-    # Maybe a refresh signal with QThread
 
 def setSomeVariables(vc, session, fv):
     global webcam, sessionID, faceverification
     webcam = vc
     sessionID = session
     faceverification = fv
+
 
 def play_pause():
     """
@@ -91,11 +90,10 @@ def start_pause_EMMA():
 
 def register_user():
     """
-    Called when a new user is to be registered for face recognition. Should prompt a new window where the
-    registering/calibration process takes place.
-    :todo: Make this.
+    Called when a new user is to be registered for face identification. Takes a frame, stores it and tries to get
+    a face id from Azure Face.
     """
-    global webcam, sessionID, faceverification
+    global webcam, sessionID, faceverification, register_window
 
     frame = get_frame(webcam)
     path = os.path.relpath('user_verification/' + sessionID)
@@ -107,12 +105,18 @@ def register_user():
     if face_id:
         faceverification.set_target_face_id(face_id)
         faceverification.setStatus(True)
+        register_window.showMessage('Face successfully registered!')
     else:
-        print('face id not valid!')
+        register_window.showMessage('Face was not recognized by Azure. Please readjust your positioning!')
+    register_window.exec_()
 
 
-
-
+def refresh_frame():
+    """
+    Called to refresh and display only the camera feed image.
+    """
+    camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))
+    camera_img.show()
 
 
 def refresh():
@@ -138,7 +142,7 @@ def init():
     their placing. References them to properly named objects so they can be used in code. Displays the GUI.
     """
     global app, window, dead, frozen, play_pause_btn, skip_btn, vol_slider, vol_text, pause_EMMA_btn, registe_user_btn, \
-        camera_img, live_img, prog_img, current_song_text, now_playing_text
+        camera_img, live_img, prog_img, current_song_text, now_playing_text, register_window
     app = QApplication(sys.argv)
     window = EmmaWindow()
     uic.loadUi(os.path.join(sys.path[0], "user_interface/EMMA.ui"), window)
@@ -158,6 +162,11 @@ def init():
     live_img = window.findChild(QLabel, 'live_img')
     prog_img = window.findChild(QLabel, 'prog_img')
     GUI_playlist.init(window)  # Links the playlist widget to its functions
+    Playlist.set_volume(vol_slider.value())  # Make sure VLC has the same value as the slider initial value.
+
+    register_window = QErrorMessage()
+    register_window.setWindowTitle('Face Identification')
+    register_window.setWindowIcon(QIcon('user_interface/emma_icon.png'))
 
     # Connects elements to callback functions
     play_pause_btn.clicked.connect(play_pause)

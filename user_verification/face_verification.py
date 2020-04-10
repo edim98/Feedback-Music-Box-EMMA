@@ -15,14 +15,16 @@ class FaceVerification:
     ENDPOINT = config['FACE_IDENTIFICATION']['FACE_IDENTIFICATION_ENDPOINT']
     face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
     isSetUp = False
+    test_flag = False
 
-    def __init__(self, target_person_name, testFlag):
+    def __init__(self, target_person_name, test_flag):
         if len(target_person_name) == 0:
             raise ValueError("Cannot supply person name of length 0 to the FaceVerification module")
 
         self.person_name = target_person_name
         self.target_face_id = self.get_target_face_id()
-        self.testFlag = testFlag
+        self.test_flag = test_flag
+
         # print("Initialized the FaceVerification module with name", self.person_name,
         #       ", and face_id:", self.target_face_id)
 
@@ -31,7 +33,7 @@ class FaceVerification:
 
     def get_target_face_id(self):
         img_fns = self.__get_images_of_target_person()
-        if img_fns:
+        if img_fns and len(self.__get_face_ids(img_fns)) != 0:
             return self.__get_face_ids(img_fns)[0]  # only taking a single face as the target for now
         return None
 
@@ -41,7 +43,7 @@ class FaceVerification:
         img_files = glob.glob(path + "/*.png")
         if len(img_files) == 0:
             # raise Exception("You must first supply some example pictures of the patient in this session")
-            if self.testFlag:
+            if self.test_flag:
                 print('No images of target person were found...')
             self.isSetUp = False
             return None
@@ -77,11 +79,11 @@ class FaceVerification:
             verify_result = self.face_client.face.verify_face_to_face(current_face_id, target_face_id)
 
             if verify_result.is_identical:
-                if self.testFlag:
+                if self.test_flag:
                     print("Found the person we're looking for")
                 return face, verify_result.confidence
             else:
-                if self.testFlag:
+                if self.test_flag:
                     print("Found a different person, skipping")
                 continue
 

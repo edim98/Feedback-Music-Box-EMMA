@@ -9,7 +9,7 @@ from user_interface.FaceNotDetectedError import FaceNotDetectedError
 SCALE_FACTOR = 1.2
 MIN_NEIGHBORS = 4
 
-WHICH_CLASSIFIER = [1, 1, 1, 0]  # Choose index 1 for simple frontal, 2 for improved frontal, 3 for profile, 4 4 smile
+WHICH_CLASSIFIER = [1, 0, 0, 0]  # Choose index 1 for simple frontal, 2 for improved frontal, 3 for profile, 4 4 smile
 CLASSIFIER_PATHS = ['haarcascade_frontalface_default.xml', 'haarcascade_profileface.xml',
                     'lbpcascade_frontalface_improved.xml',
                     # This can be copied from https://raw.githubusercontent.com/opencv/opencv/master/data/lbpcascades/lbpcascade_frontalface_improved.xml
@@ -52,11 +52,11 @@ def draw_face_boxes(frame):
 
     for (x, y, w, h) in faces_improved:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (10, 250, 10), 1)
-        cv2.putText(frame, "F2", (x - 10, y), 3, 1, (10, 250, 10))
+        cv2.putText(frame, "Frontal_2", (x - 10, y), 3, 1, (10, 250, 10))
 
     for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 50, 0), 1)
-        cv2.putText(frame, "F1", (x - 10, y), 3, 1, (200, 50, 0))
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (160, 50, 0), 1)
+        cv2.putText(frame, "Frontal_1", (x - 10, y), 3, 1, (160, 50, 0))
 
     for (x, y, w, h) in profiles:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 50, 200), 2)
@@ -233,8 +233,6 @@ def remove_frame(name="frame"):
             os.chmod(path_to_image, 0o777)
             os.unlink(path_to_image)
             os.remove(path_to_image)
-        else:
-            print("{}.png is apparently not a file".format(name))  # TODO: remove this print?
     except FileNotFoundError:
         return  # We can just ignore this, won't make a difference in functionality. FIX: use images as bytes
         # instead of files.
