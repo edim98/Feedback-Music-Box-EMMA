@@ -86,4 +86,13 @@ Install the python packages for 32-bit systems:
 
 `pip3 install adafruit-mcp3xxx`
 
-Also make sure that SPI is enabled, by going to Raspberry Pi Configuration > Interfaces.
+    `cd /tmp
+    wget https://project-downloads.drogon.net/wiringpi-latest.deb
+    sudo dpkg -i wiringpi-latest.deb`
+
+* Raspberry Pi Configurations
+
+Enable SPI from Raspberry Pi Configuration > Interfaces.
+
+Make sure that the Audio output of the Rapsberry Pi is set to the speakers.
+It chooses HDMI by default.
