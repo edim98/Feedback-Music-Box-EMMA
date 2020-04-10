@@ -17,6 +17,7 @@ from audio import Tracklist, Playlist
 from model.model import facechop, classify
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 from user_interface.face_utils import get_frame, remove_frame, close_camera, draw_face_boxes
+from hardware.buttons import buttons_initialize
 
 THRESHOLD = -10
 args = None
@@ -85,6 +86,10 @@ def initialize():
     if args.azure:
         plotter.set_azure_flag()
     plotter.init()
+
+    if args.test:
+        print('Setting up the buttons...')
+    buttons_initialize()
 
     # if not os.path.isfile('settings.cfg'):
     #     with open('settings.cfg', 'w') as cfg_file:
