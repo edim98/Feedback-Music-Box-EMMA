@@ -70,6 +70,10 @@ def change_volume():
     vol_text.setText("{}%".format(vol_slider.value()))
     Playlist.set_volume(vol_slider.value())
 
+def set_volume():
+    current_volume = check_volume()
+    vol_slider.setValue(current_volume)
+    Playlist.set_volume(current_volume)
 
 def start_pause_EMMA():
     """
@@ -111,7 +115,6 @@ def refresh_frame():
     """
     Called to refresh and display only the camera feed image.
     """
-    print(check_volume())
     camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))
     camera_img.show()
 
@@ -121,8 +124,6 @@ def refresh():
     Called when new images are to be displayed on the screen (i.e. new reaction from the user). Sets a new pixmap
     component for each of the image object on the screen. Finally, repaints the whole window.
     """
-
-    print(check_volume())
 
     #  The later two parameters of scaled() are for keeping the aspect ratio and smoothing the result of scaling
     camera_img.setPixmap(QPixmap(CAMERA_IMG_PATH).scaled(camera_img.width(), camera_img.height(), 1, 1))
@@ -176,7 +177,7 @@ def init():
     current_song_text.hide()
     now_playing_text.hide()
 
-    buttons_initialize(play_pause, skip)
+    buttons_initialize(play_pause, skip, set_volume)
 
     window.show()
 
