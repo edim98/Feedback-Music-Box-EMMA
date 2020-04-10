@@ -10,6 +10,9 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 spi, cs, mcp, chan0 = None, None, None, None
 play_pause, skip = None, None
 
+def cleanup():
+    GPIO.cleanup()
+
 # Stop the system/music
 def play_button(channel):
     global play_pause

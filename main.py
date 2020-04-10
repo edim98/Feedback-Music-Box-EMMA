@@ -17,6 +17,7 @@ from audio import Tracklist, Playlist
 from model.model import facechop, classify
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 from user_interface.face_utils import get_frame, remove_frame, close_camera, draw_face_boxes
+from hardware.buttons import cleanup
 
 THRESHOLD = -10
 args = None
@@ -210,6 +211,7 @@ def main():
 
     print("[EMMA]: Closing the camera...")
     close_camera(vc)
+    cleanup()
     thread.join()
 
 
