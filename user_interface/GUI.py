@@ -10,7 +10,7 @@ import audio.Playlist as Playlist
 import user_interface.GUI_playlist as GUI_playlist
 from user_interface.face_utils import get_frame
 # from hardware.buttons import check_volume
-import hardware.buttons.check_volume as check_volume
+from hardware.buttons import buttons_initialize, check_volume
 
 CAMERA_IMG_PATH = "frame.png"
 LIVE_IMG_PATH = "emotions_plot.png"
@@ -174,6 +174,8 @@ def init():
     register_user_btn.clicked.connect(register_user)
     current_song_text.hide()
     now_playing_text.hide()
+
+    buttons_initialize(play_pause, skip)
 
     window.show()
 
