@@ -94,5 +94,5 @@ Install the python packages for 32-bit systems:
 
 Enable SPI from Raspberry Pi Configuration > Interfaces.
 
-Make sure that the Audio output of the Rapsberry Pi is set to the speakers.
-It chooses HDMI by default.
+Make sure that the Audio output of the Rapsberry Pi is set to the speakers
+(by using `sudo raspi-config`). The default choice is HDMI.
