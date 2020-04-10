@@ -68,8 +68,8 @@ def buttons_initialize():
 
 
     # Add event listener for volume knob.
-    GPIO.setup(9, GPIO.RISING, callback=volume_button)
-    GPIO.setup(9, GPIO.FALLING, callback=volume_button)
+    GPIO.add_event_detect(9, GPIO.RISING, callback=volume_button)
+    GPIO.add_event_detect(9, GPIO.FALLING, callback=volume_button)
 
     # create the spi bus
     spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
