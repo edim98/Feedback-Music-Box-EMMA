@@ -77,15 +77,9 @@ def start_pause_EMMA():
     if pause_EMMA_btn.text() == "Pause EMMA":
         frozen = True
         pause_EMMA_btn.setText("Resume EMMA")
-        play_pause_btn.setEnabled(False)
-        skip_btn.setEnabled(False)
-        vol_slider.setEnabled(False)
     else:
         frozen = False
         pause_EMMA_btn.setText("Pause EMMA")
-        play_pause_btn.setEnabled(True)
-        skip_btn.setEnabled(True)
-        vol_slider.setEnabled(True)
 
 
 def register_user():
