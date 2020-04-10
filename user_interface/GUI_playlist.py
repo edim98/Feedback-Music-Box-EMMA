@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QWidget, QLabel, QPushButton,
 from pymongo import MongoClient
 
 import audio.Playlist as Playlist
+import audio.Tracklist as Tracklist
 import user_interface.GUI
 import user_interface.SongForm
 
@@ -13,10 +14,9 @@ row, column, scroll_layout, scroll_contents, dialog = 0, 0, None, None, None
 client = MongoClient()
 db = client.test_database
 
-#TODO: Change order in which name and artist are added in the playlist.
-#TODO: Add artist field in the database (maybe even remove artist field??)
-#TODO: Descriptors are added with capital first letter -> errors.
-#TODO: Add an import existing playlist option.
+
+# TODO: Add artist field in the database (maybe even remove artist field??)
+# TODO: Add an import existing playlist option.
 
 def init(window):
     """
@@ -80,7 +80,7 @@ def add_entry(song):
 
 def remove_entry(label, play_button, remove_button):
     """
-    Deletes a given entry from the playlist widget and readjusts the size.
+    Deletes a given entry from the database and playlist widget and readjusts the size of the widget accordingly.
     :param label: The label containing the name of the entry.
     :param play_button: The play button of the entry.
     :param remove_button: The remove button of the entry.
@@ -97,6 +97,8 @@ def remove_entry(label, play_button, remove_button):
     label.deleteLater()
     play_button.deleteLater()
 
+    Tracklist.remove_song(db, label.text())  # Deletes the entry from the database.
+
 
 def play_entry(label):
     """
@@ -110,8 +112,8 @@ def play_entry(label):
         user_interface.GUI.play_pause_btn.setText("Pause")
         user_interface.GUI.now_playing_text.show()
         user_interface.GUI.current_song_text.setText("{}".format(label.text()))
-        # print("set text to : {}".format(label.text()))
-        if not  user_interface.GUI.current_song_text.isVisible():
+
+        if not user_interface.GUI.current_song_text.isVisible():
             user_interface.GUI.current_song_text.show()
     else:
         user_interface.GUI.play_pause_btn.setText("Play")

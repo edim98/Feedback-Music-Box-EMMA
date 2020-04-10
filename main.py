@@ -21,7 +21,8 @@ from user_interface.face_utils import get_frame, remove_frame, close_camera, dra
 THRESHOLD = -10
 args = None
 
-def get_facial_emotion(frame, face_verification = None):
+
+def get_facial_emotion(frame, face_verification=None):
     """
     Attempts to get facial emotion dictionary from Azure Face and saves the corresponding frame as file.
     Attempts to remove any old version before saving the file to prevent any file system issues.
@@ -79,7 +80,7 @@ def initialize():
     if args.test:
         print('Created aggregated data logs...')
 
-    #TODO: raise IndexError('Cannot choose from an empty sequence') from None
+    # TODO: raise IndexError('Cannot choose from an empty sequence') from None
     Playlist.song_player(db, sessionID, args.repeat, args.test)
 
     if args.azure:
@@ -155,8 +156,8 @@ def main():
         end_time = time.time()
 
         if end_time - start_time < 3.1:
-            cv2.imwrite('frame.png', frame)
-            GUI.refresh_frame()
+            # cv2.imwrite('frame.png', frame)
+            # GUI.refresh_frame()
             continue
 
         start_time = time.time()
@@ -191,9 +192,6 @@ def main():
 
                 remove_frame("progress_plot")
                 remove_frame("emotions_plot")
-                remove_frame()
-                draw_face_boxes(frame)  # Draw box around the face.
-                cv2.imwrite("frame.png", frame)
                 if args.azure:
                     plotter.write_plot(emotions)
                 else:
