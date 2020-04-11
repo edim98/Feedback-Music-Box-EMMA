@@ -19,7 +19,8 @@ class SongForm(QWidget):
         self.setMinimumWidth(300)
 
         # Define file selection dialog box
-        self.file_selection = QFileDialog
+        self.file_selection = QFileDialog()
+        self.file_selection.setDirectory("audio/tracks")
 
         # Database connection
         self.session_id = 'test'
@@ -27,7 +28,7 @@ class SongForm(QWidget):
 
         # Buttons
         self.second_button = QPushButton('Add song')
-        self.second_button.focus = True
+        self.second_button.default = True
         self.second_button.clicked.connect(self.add_song)
         self.choose_file_button = QPushButton('Pick file')
         self.choose_file_button.clicked.connect(self.get_song_name)
@@ -83,8 +84,6 @@ class SongForm(QWidget):
 
     # Returns name of song from MRL
     def get_song_name(self):
-        # TODO: Make this add the mp3 to our media player (maybe even to the tracks folder) and have it properly \
-        #  separate artist and song name and combine it into "artist - song"
         name = self.file_selection.getOpenFileName()
         song = name[0].split('/')
         song = song[len(song) - 1].replace('.mp3', '')
@@ -93,7 +92,6 @@ class SongForm(QWidget):
 
     # Adds the song from the form - should be used to also add to the database
     def add_song(self):
-        #  TODO: Make this look for the file in the audio/tracks to prevent adding non-existing media.
         # Check for song name
         if self.song_name.text() != '':
             # Check for artist

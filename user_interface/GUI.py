@@ -165,7 +165,7 @@ def init():
     GUI_playlist.init(window)  # Links the playlist widget to its functions
     Playlist.set_volume(vol_slider.value())  # Make sure VLC has the same value as the slider initial value.
 
-    register_window = QErrorMessage()
+    register_window = QErrorMessage()  # Pop-up window for registering a user.
     register_window.setWindowTitle('Face Identification')
     register_window.setWindowIcon(QIcon('user_interface/emma_icon.png'))
 

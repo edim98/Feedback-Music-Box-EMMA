@@ -11,7 +11,7 @@ COLORS = {  # Used for color coding the graphs
     'anger': '#dd3418',  # red
     'contempt': '#dd8518',  # orange
     'disgust': '#4a8a4d',  # puke green
-    'fear': '#808080',  # ghost white
+    'fear': '#cccccc',  # ghost white
     'happiness': '#f0f417',  # bright yellow
     'neutral': '#808080',  # gray
     'sadness': '#5d7293',  # sad blue
