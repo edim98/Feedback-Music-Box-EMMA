@@ -202,10 +202,13 @@ def get_current_song():
 
     global media_list_player, encoding
 
-    name = media_list_player.get_media_player().get_media().get_mrl().split('/')[-1][:-4]
+    try:
+        name = media_list_player.get_media_player().get_media().get_mrl().split('/')[-1][:-4]
 
-    for key in encoding:
-        name = name.replace(key, encoding[key])
+        for key in encoding:
+            name = name.replace(key, encoding[key])
+    except:
+        name = ''
     # name = name.replace()
 
 
