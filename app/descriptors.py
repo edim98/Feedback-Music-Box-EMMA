@@ -83,7 +83,7 @@ struct_descriptors = {
         'spanish': 0,
         'french': 0,
         'italian': 0,
-        'portugese': 0, # TODO: change this to portuguese
+        'portuguese': 0,
         'other': 0
     }
 }
