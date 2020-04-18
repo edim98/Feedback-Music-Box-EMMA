@@ -159,7 +159,7 @@ def main():
         end_time = time.time()
 
         if end_time - start_time < 3.1:
-            cv2.imwrite('frame.png', frame)
+ #           cv2.imwrite('frame.png', frame)
             GUI.refresh_frame()
             continue
 
