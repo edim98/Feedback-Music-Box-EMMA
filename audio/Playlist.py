@@ -167,7 +167,10 @@ def play():
 
     global media_list_player
 
-    media_list_player.play()
+    try:
+        media_list_player.play()
+    except:
+        print('No track in queue!')
 
 def pause():
     """
