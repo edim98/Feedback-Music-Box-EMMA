@@ -17,6 +17,7 @@ from audio import Tracklist, Playlist
 from model.model import facechop, classify
 from user_interface.FaceNotDetectedError import FaceNotDetectedError
 from user_interface.face_utils import get_frame, remove_frame, close_camera, draw_face_boxes
+from hardware.buttons import cleanup
 
 THRESHOLD = -10
 args = None
@@ -158,7 +159,8 @@ def main():
         # Query the Model once every 3 seconds.
         end_time = time.time()
 
-        if end_time - start_time < 3.1:
+        if end_time - start_time < 3.1:  # Uncomment the following two lines for a continuos camera feed.
+        #WARNING: A Raspberry Pi 4 model B, 2GB RAM, will not support this change.
             # cv2.imwrite('frame.png', frame)
             # GUI.refresh_frame()
             continue
@@ -208,6 +210,7 @@ def main():
 
     print("[EMMA]: Closing the camera...")
     close_camera(vc)
+    cleanup()
     thread.join()
 
 

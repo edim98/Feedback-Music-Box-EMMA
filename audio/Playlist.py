@@ -74,10 +74,10 @@ def song_player(param_db, param_sessionID, repeat, test):
     playlist = vlc.MediaList()
 
     # Add a random song to the playlist.
-    allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db))]
-    random_song = random.choice(allSongs)
-    path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
-    playlist.add_media(path)
+ #   allSongs = [song['name'] for song in list(Tracklist.get_all_songs(db))]
+  #  random_song = random.choice(allSongs)
+   # path = os.path.relpath('./audio/tracks/' + random_song + '.mp3')
+   # playlist.add_media(path)
 
     # Link playlist to media list player.
     media_list_player = vlc.MediaListPlayer()

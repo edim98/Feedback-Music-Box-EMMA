@@ -10,6 +10,9 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 spi, cs, mcp, chan0 = None, None, None, None
 play_pause, skip, = None, None
 
+def cleanup():
+    GPIO.cleanup()
+
 # Stop the system/music
 def play_button(channel):
     global play_pause
@@ -44,7 +47,7 @@ def check_volume():
         # convert 16bit adc0 (0-65535) trim pot read into 0-100 volume level
         trim_pot = chan0.value
         set_volume = remap_range(trim_pot, 0, 65535, 0, 100)
-        print('Volume = {volume}%' .format(volume = set_volume))
+        #print('Volume = {volume}%' .format(volume = set_volume))
         return set_volume
 
 # Set the system volume to the given value
