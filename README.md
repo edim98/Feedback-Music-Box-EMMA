@@ -1,6 +1,6 @@
 # E.M.M.A.
 <p align="center">
-<img src="Poster.png" width="192">
+<img src="Poster.png>
 </p>
 
 ## Installation instructions
